@@ -1,0 +1,1 @@
+import{_ as s,g as o,d as e,r as a}from"./index-eeS0tr02.js";const n={},r={class:"page-container"};function c(l,t){return a(),o("div",r,[...t[0]||(t[0]=[e("div",{class:"toolbar"},[e("span",{class:"toolbar-title"},"评论管理")],-1),e("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"评论管理 - 对接 /admin/comments API",-1)])])}const i=s(n,[["render",c]]);export{i as default};

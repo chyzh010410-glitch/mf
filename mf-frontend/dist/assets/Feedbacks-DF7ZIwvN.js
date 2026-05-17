@@ -1,0 +1,1 @@
+import{_ as t,g as a,d as e,r as o}from"./index-eeS0tr02.js";const c={},n={class:"page-container"};function r(d,s){return o(),a("div",n,[...s[0]||(s[0]=[e("div",{class:"toolbar"},[e("span",{class:"toolbar-title"},"反馈处理")],-1),e("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"反馈处理 - 对接 /admin/feedbacks API",-1)])])}const i=t(c,[["render",r]]);export{i as default};

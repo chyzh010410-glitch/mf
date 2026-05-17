@@ -1,0 +1,1 @@
+import{a as t,g as a,d as s,s as n}from"./index-cEctoLGk.js";const o={},c={class:"page-container"};function r(d,e){return n(),a("div",c,[...e[0]||(e[0]=[s("h2",{class:"section-title"},"收货地址",-1),s("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"地址管理加载中...",-1)])])}const l=t(o,[["render",r]]);export{l as default};

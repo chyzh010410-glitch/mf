@@ -1,0 +1,1 @@
+import{_ as t,g as a,d as e,r as o}from"./index-eeS0tr02.js";const n={},r={class:"page-container"};function c(l,s){return o(),a("div",r,[...s[0]||(s[0]=[e("div",{class:"toolbar"},[e("span",{class:"toolbar-title"},"用户上传审核")],-1),e("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"上传审核 - 对接 /admin/uploads API",-1)])])}const i=t(n,[["render",c]]);export{i as default};

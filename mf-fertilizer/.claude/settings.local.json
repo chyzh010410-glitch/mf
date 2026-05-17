@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(superpowers:brainstorming)",
+      "Read(//c/Users/Chyzh/.claude/plugins/**)",
+      "Read(//c/Users/Chyzh/.claude/plugins/cache/**)",
+      "Read(//c/Users/Chyzh/.claude/skills/**)",
+      "Read(//c/Users/Chyzh/.agents/skills/**)",
+      "Bash(claude plugins *)",
+      "Bash(ls *)",
+      "Bash(npx skills *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(mvn *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(mysql *)",
+      "Bash(redis-cli *)",
+      "Bash(curl *)",
+      "Bash(netstat *)",
+      "Bash(taskkill *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(mkdir *)",
+      "Bash(wc *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(cd *)",
+      "Bash(sleep *)",
+      "Bash(rm *)",
+      "Bash(kill *)",
+      "Bash(unzip *)",
+      "Bash(java *)",
+      "Bash(source *)",
+      "Bash(which *)",
+      "WebSearch"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+import{_ as o,g as s,d as e,r as a}from"./index-eeS0tr02.js";const n={},r={class:"page-container"};function c(i,t){return a(),s("div",r,[...t[0]||(t[0]=[e("div",{class:"toolbar"},[e("span",{class:"toolbar-title"},"平台设置")],-1),e("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"平台设置 - 对接 /admin/configs API",-1)])])}const d=o(n,[["render",c]]);export{d as default};

@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">用户上传审核</span></div><p style="padding:40px;text-align:center;color:#999">上传审核 - 对接 /admin/uploads API</p></div></template>

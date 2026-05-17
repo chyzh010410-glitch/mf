@@ -1,0 +1,30 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #app {
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+a { text-decoration: none; color: inherit; }
+
+.page-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 20px;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--color-primary);
+  --el-button-border-color: var(--color-primary);
+  --el-button-hover-bg-color: var(--color-primary-light);
+  --el-button-hover-border-color: var(--color-primary-light);
+}

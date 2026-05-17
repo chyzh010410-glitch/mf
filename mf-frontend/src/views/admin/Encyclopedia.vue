@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">百科管理</span><el-button type="primary">新增词条</el-button></div><p style="padding:40px;text-align:center;color:#999">百科管理 - 对接 /admin/encyclopedia API</p></div></template>

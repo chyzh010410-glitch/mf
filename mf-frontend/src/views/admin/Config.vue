@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">平台设置</span></div><p style="padding:40px;text-align:center;color:#999">平台设置 - 对接 /admin/configs API</p></div></template>

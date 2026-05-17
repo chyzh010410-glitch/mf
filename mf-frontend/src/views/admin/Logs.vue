@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">系统日志</span></div><p style="padding:40px;text-align:center;color:#999">日志 - 对接 /admin/logs API</p></div></template>

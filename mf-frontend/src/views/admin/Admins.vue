@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">管理员管理</span><el-button type="primary">新增管理员</el-button></div><p style="padding:40px;text-align:center;color:#999">管理员 - 对接 /admin/admins API</p></div></template>

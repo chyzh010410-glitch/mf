@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">消息推送</span><el-button type="primary">发送消息</el-button></div><p style="padding:40px;text-align:center;color:#999">消息 - 对接 /admin/messages API</p></div></template>

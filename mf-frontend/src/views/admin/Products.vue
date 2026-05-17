@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">商品列表</span><el-button type="primary">新增商品</el-button></div><el-table :data="[]" border stripe><el-table-column prop="name" label="商品"/><el-table-column prop="price" label="价格"/></el-table><p style="padding:40px;text-align:center;color:#999">商品管理 - 对接 /admin/products API</p></div></template>

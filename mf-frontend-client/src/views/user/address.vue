@@ -1,0 +1,1 @@
+<template><div class="page-container"><h2 class="section-title">收货地址</h2><p style="padding:40px;text-align:center;color:#999">地址管理加载中...</p></div></template>

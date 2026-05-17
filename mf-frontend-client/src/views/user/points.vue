@@ -1,0 +1,1 @@
+<template><div class="page-container"><h2 class="section-title">我的积分</h2><p style="padding:40px;text-align:center;color:#999">积分记录加载中...</p></div></template>

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:brainstorming:*)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash([ -f \"f:/IdeaProjects/mf-frontend-client/src/views/$f.vue\" ])",
+      "Bash(printf \"import request from '@/utils/request'\\\\nexport function createOrder\\(data\\) { return request\\({ url: '/client/orders', method: 'post', data }\\) }\\\\nexport function getOrderList\\(params\\) { return request\\({ url: '/client/orders', method: 'get', params }\\) }\\\\nexport function getOrderDetail\\(id\\) { return request\\({ url: '/client/orders/'+id, method: 'get' }\\) }\\\\nexport function cancelOrder\\(id, data\\) { return request\\({ url: '/client/orders/'+id+'/cancel', method: 'post', data }\\) }\\\\nexport function confirmOrder\\(id\\) { return request\\({ url: '/client/orders/'+id+'/confirm', method: 'post' }\\) }\\\\n\")",
+      "Bash(printf \"import request from '@/utils/request'\\\\nexport function getAddresses\\(\\) { return request\\({ url: '/client/addresses', method: 'get' }\\) }\\\\nexport function addAddress\\(data\\) { return request\\({ url: '/client/addresses', method: 'post', data }\\) }\\\\nexport function updateAddress\\(id, data\\) { return request\\({ url: '/client/addresses/'+id, method: 'put', data }\\) }\\\\nexport function deleteAddress\\(id\\) { return request\\({ url: '/client/addresses/'+id, method: 'delete' }\\) }\\\\nexport function setDefaultAddress\\(id\\) { return request\\({ url: '/client/addresses/'+id+'/default', method: 'put' }\\) }\\\\n\")",
+      "Bash(printf \"import request from '@/utils/request'\\\\nexport function getArticleList\\(params\\) { return request\\({ url: '/client/articles', method: 'get', params }\\) }\\\\nexport function getArticleDetail\\(id\\) { return request\\({ url: '/client/articles/'+id, method: 'get' }\\) }\\\\n\")",
+      "Bash(printf \"import request from '@/utils/request'\\\\nexport function getFavorites\\(params\\) { return request\\({ url: '/client/favorites', method: 'get', params }\\) }\\\\nexport function addFavorite\\(data\\) { return request\\({ url: '/client/favorites', method: 'post', data }\\) }\\\\nexport function removeFavorite\\(id\\) { return request\\({ url: '/client/favorites/'+id, method: 'delete' }\\) }\\\\n\")",
+      "Bash(printf \"import request from '@/utils/request'\\\\nexport function getHistory\\(params\\) { return request\\({ url: '/client/history', method: 'get', params }\\) }\\\\nexport function clearHistory\\(\\) { return request\\({ url: '/client/history', method: 'delete' }\\) }\\\\n\")"
+    ]
+  }
+}

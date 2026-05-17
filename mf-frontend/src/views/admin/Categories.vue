@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">商品分类</span><el-button type="primary">新增分类</el-button></div><p style="padding:40px;text-align:center;color:#999">分类管理 - 对接 /admin/categories API</p></div></template>

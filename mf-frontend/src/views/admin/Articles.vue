@@ -1,0 +1,1 @@
+<template><div class="page-container"><div class="toolbar"><span class="toolbar-title">文章管理</span><el-button type="primary">新增文章</el-button></div><p style="padding:40px;text-align:center;color:#999">文章管理 - 对接 /admin/articles API</p></div></template>

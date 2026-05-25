@@ -1,6 +1,7 @@
 package com.mf.fertilizer.controller.client;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mf.fertilizer.context.UserContext;
 import com.mf.fertilizer.dto.PageDTO;
 import com.mf.fertilizer.entity.Message;
 import com.mf.fertilizer.service.MessageService;
@@ -16,16 +17,10 @@ import java.time.LocalDateTime;
 public class ClientMessageController {
     private final MessageService service;
 
-    private Long uid(jakarta.servlet.http.HttpServletRequest r) {
-        return Long.valueOf(com.mf.fertilizer.util.JwtUtil.parse(
-            r.getHeader("Authorization").substring(7)).getId());
-    }
-
     @GetMapping
     public ResultVO<PageVO<Message>> list(@ModelAttribute PageDTO page,
-                                           @RequestParam(name = "type", required = false) String type,
-                                           jakarta.servlet.http.HttpServletRequest req) {
-        var p = service.lambdaQuery().eq(Message::getUserId, uid(req))
+                                           @RequestParam(name = "type", required = false) String type) {
+        var p = service.lambdaQuery().eq(Message::getUserId, UserContext.getUserId())
                 .eq(type != null, Message::getType, type)
                 .orderByDesc(Message::getCreateTime)
                 .page(new Page<>(page.getPage(), page.getSize()));
@@ -33,8 +28,8 @@ public class ClientMessageController {
     }
 
     @GetMapping("/unread-count")
-    public ResultVO<Long> unread(jakarta.servlet.http.HttpServletRequest req) {
-        long count = service.lambdaQuery().eq(Message::getUserId, uid(req)).eq(Message::getIsRead, 0).count();
+    public ResultVO<Long> unread() {
+        long count = service.lambdaQuery().eq(Message::getUserId, UserContext.getUserId()).eq(Message::getIsRead, 0).count();
         return ResultVO.success(count);
     }
 

@@ -1,5 +1,6 @@
 package com.mf.fertilizer.controller.client;
 
+import com.mf.fertilizer.context.UserContext;
 import com.mf.fertilizer.dto.client.CartAddDTO;
 import com.mf.fertilizer.dto.client.CartUpdateDTO;
 import com.mf.fertilizer.entity.ShoppingCartItem;
@@ -23,14 +24,9 @@ public class ClientCartController {
     private final ShoppingCartItemService cartService;
     private final ProductService productService;
 
-    private Long getUserId(jakarta.servlet.http.HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        return Long.valueOf(com.mf.fertilizer.util.JwtUtil.parse(token).getId());
-    }
-
     @GetMapping
-    public ResultVO<CartVO> list(jakarta.servlet.http.HttpServletRequest request) {
-        Long userId = getUserId(request);
+    public ResultVO<CartVO> list() {
+        Long userId = UserContext.getUserId();
         var items = cartService.lambdaQuery().eq(ShoppingCartItem::getUserId, userId).list();
         var vo = new CartVO();
         var itemVOs = new ArrayList<CartVO.CartItemVO>();
@@ -57,8 +53,8 @@ public class ClientCartController {
     }
 
     @PostMapping
-    public ResultVO<?> add(@Valid @RequestBody CartAddDTO dto, jakarta.servlet.http.HttpServletRequest request) {
-        Long userId = getUserId(request);
+    public ResultVO<?> add(@Valid @RequestBody CartAddDTO dto) {
+        Long userId = UserContext.getUserId();
         var existing = cartService.lambdaQuery()
                 .eq(ShoppingCartItem::getUserId, userId)
                 .eq(ShoppingCartItem::getProductId, dto.getProductId()).one();
@@ -74,7 +70,6 @@ public class ClientCartController {
                 item.setSelected(1);
                 cartService.save(item);
             } catch (org.springframework.dao.DuplicateKeyException e) {
-                // 并发重复，回退为增量更新
                 var dup = cartService.lambdaQuery()
                         .eq(ShoppingCartItem::getUserId, userId)
                         .eq(ShoppingCartItem::getProductId, dto.getProductId()).one();
@@ -104,8 +99,8 @@ public class ClientCartController {
     }
 
     @DeleteMapping
-    public ResultVO<?> clear(jakarta.servlet.http.HttpServletRequest request) {
-        Long userId = getUserId(request);
+    public ResultVO<?> clear() {
+        Long userId = UserContext.getUserId();
         cartService.lambdaUpdate().eq(ShoppingCartItem::getUserId, userId).remove();
         return ResultVO.success();
     }

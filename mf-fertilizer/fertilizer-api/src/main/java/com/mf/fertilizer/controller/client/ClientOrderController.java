@@ -1,6 +1,8 @@
 package com.mf.fertilizer.controller.client;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mf.fertilizer.context.UserContext;
 import com.mf.fertilizer.dto.PageDTO;
 import com.mf.fertilizer.dto.client.OrderCreateDTO;
 import com.mf.fertilizer.entity.*;
@@ -11,6 +13,7 @@ import com.mf.fertilizer.vo.client.OrderVO;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -31,16 +34,12 @@ public class ClientOrderController {
     private final UserAddressService addressService;
     private final ShoppingCartItemService cartService;
     private final JdbcTemplate jdbcTemplate;
-
-    private Long getUserId(jakarta.servlet.http.HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        return Long.valueOf(com.mf.fertilizer.util.JwtUtil.parse(token).getId());
-    }
+    private final StringRedisTemplate redisTemplate;
 
     @PostMapping
     @Transactional
-    public ResultVO<?> create(@Valid @RequestBody OrderCreateDTO dto, jakarta.servlet.http.HttpServletRequest request) {
-        Long userId = getUserId(request);
+    public ResultVO<?> create(@Valid @RequestBody OrderCreateDTO dto) {
+        Long userId = UserContext.getUserId();
         var address = addressService.getById(dto.getAddressId());
         if (address == null || !address.getUserId().equals(userId)) return ResultVO.fail(400, "收货地址无效");
 
@@ -59,6 +58,16 @@ public class ClientOrderController {
             var product = productService.getById(itemDto.getProductId());
             if (product == null || product.getStatus() == 0) return ResultVO.fail(400, "商品「" + itemDto.getProductId() + "」不存在或已下架");
             if (product.getStock() < itemDto.getQuantity()) return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
+
+            // Redis 原子扣库存，防止超卖
+            String stockKey = "stock:product:" + product.getId();
+            redisTemplate.opsForValue().setIfAbsent(stockKey, String.valueOf(product.getStock()));
+            Long remaining = redisTemplate.opsForValue().decrement(stockKey, itemDto.getQuantity());
+            if (remaining != null && remaining < 0) {
+                redisTemplate.opsForValue().increment(stockKey, itemDto.getQuantity());
+                return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
+            }
+
             var oi = new OrderItem();
             oi.setOrderNo(orderNo);
             oi.setProductId(product.getId());
@@ -83,7 +92,6 @@ public class ClientOrderController {
             item.setOrderId(order.getId());
             orderItemService.save(item);
         }
-        // 下单成功，物理删除购物车对应商品
         for (var itemDto : dto.getItems()) {
             jdbcTemplate.update("DELETE FROM shopping_cart_item WHERE user_id = ? AND product_id = ?",
                     userId, itemDto.getProductId());
@@ -97,10 +105,9 @@ public class ClientOrderController {
 
     @GetMapping
     public ResultVO<PageVO<OrderVO>> list(@ModelAttribute PageDTO page,
-                                          @RequestParam(required = false) String status,
-                                          jakarta.servlet.http.HttpServletRequest request) {
-        Long userId = getUserId(request);
-        var wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<OrderEntity>()
+                                          @RequestParam(required = false) String status) {
+        Long userId = UserContext.getUserId();
+        var wrapper = new LambdaQueryWrapper<OrderEntity>()
                 .eq(OrderEntity::getUserId, userId)
                 .eq(status != null, OrderEntity::getStatus, status)
                 .orderByDesc(OrderEntity::getCreateTime);

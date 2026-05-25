@@ -1,6 +1,8 @@
 package com.mf.fertilizer.config;
 
 import com.mf.fertilizer.constant.RedisKey;
+import com.mf.fertilizer.context.UserContext;
+import com.mf.fertilizer.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +45,26 @@ public class JwtInterceptorConfig implements WebMvcConfigurer {
             }
             token = token.substring(7);
             String path = request.getRequestURI();
-            // Determine token prefix based on path
             String keyPrefix = path.startsWith("/client/") ? CLIENT_TOKEN_PREFIX : RedisKey.LOGIN_TOKEN;
             var exists = redisTemplate.hasKey(keyPrefix + token);
             if (Boolean.FALSE.equals(exists)) {
                 response.setStatus(401);
                 return false;
             }
+            // Parse JWT and populate ThreadLocal for downstream use
+            var claims = JwtUtil.parse(token);
+            UserContext.set(
+                    Long.valueOf(claims.getId()),
+                    claims.getSubject(),
+                    JwtUtil.getRole(claims),
+                    JwtUtil.getUserType(claims)
+            );
             return true;
+        }
+
+        @Override
+        public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+            UserContext.clear();
         }
     }
 }

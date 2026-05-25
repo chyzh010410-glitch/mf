@@ -60,6 +60,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { Search, Bell, ShoppingCart } from '@element-plus/icons-vue'
+import { getUnreadCount } from '@/api/message'
+// 第一步：先从 vue 导入 provide（必须写！）
+import { provide } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -67,19 +70,21 @@ const searchKeyword = ref('')
 const cartCount = ref(0)
 const unreadCount = ref(0)
 
+const fetchUnreadCount = async () => {
+  try {
+    const res = await getUnreadCount()
+    unreadCount.value = res.data || 0
+  } catch {}
+}
+provide('fetchUnreadCount', fetchUnreadCount)
+
 const doSearch = () => {
   if (searchKeyword.value) router.push({ path: '/products', query: { keyword: searchKeyword.value } })
 }
 
 const handleLogout = () => { authStore.logout(); router.push('/login') }
 
-onMounted(async () => {
-  try {
-    const { getUnreadCount } = await import('@/api/message')
-    const res = await getUnreadCount()
-    unreadCount.value = res.data || 0
-  } catch {}
-})
+onMounted(() => { fetchUnreadCount() })
 </script>
 
 <style scoped>

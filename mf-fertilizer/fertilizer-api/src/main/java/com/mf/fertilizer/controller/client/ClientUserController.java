@@ -1,5 +1,6 @@
 package com.mf.fertilizer.controller.client;
 
+import com.mf.fertilizer.context.UserContext;
 import com.mf.fertilizer.entity.User;
 import com.mf.fertilizer.entity.UserAddress;
 import com.mf.fertilizer.service.UserService;
@@ -21,19 +22,14 @@ public class ClientUserController {
     private final UserService userService;
     private final UserAddressService addressService;
 
-    private Long getUserId(jakarta.servlet.http.HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        return Long.valueOf(com.mf.fertilizer.util.JwtUtil.parse(token).getId());
-    }
-
     @GetMapping("/user/profile")
-    public ResultVO<User> profile(jakarta.servlet.http.HttpServletRequest request) {
-        return ResultVO.success(userService.getById(getUserId(request)));
+    public ResultVO<User> profile() {
+        return ResultVO.success(userService.getById(UserContext.getUserId()));
     }
 
     @PutMapping("/user/profile")
-    public ResultVO<?> updateProfile(@RequestBody User form, jakarta.servlet.http.HttpServletRequest request) {
-        var user = userService.getById(getUserId(request));
+    public ResultVO<?> updateProfile(@RequestBody User form) {
+        var user = userService.getById(UserContext.getUserId());
         if (form.getNickname() != null) user.setNickname(form.getNickname());
         if (form.getAvatar() != null) user.setAvatar(form.getAvatar());
         if (form.getEmail() != null) user.setEmail(form.getEmail());
@@ -43,8 +39,8 @@ public class ClientUserController {
     }
 
     @PutMapping("/user/password")
-    public ResultVO<?> changePassword(@RequestBody PasswordForm form, jakarta.servlet.http.HttpServletRequest request) {
-        var user = userService.getById(getUserId(request));
+    public ResultVO<?> changePassword(@RequestBody PasswordForm form) {
+        var user = userService.getById(UserContext.getUserId());
         String oldPwd = DigestUtils.md5DigestAsHex(form.getOldPassword().getBytes(StandardCharsets.UTF_8));
         if (!oldPwd.equals(user.getPassword())) return ResultVO.fail(400, "原密码错误");
         user.setPassword(DigestUtils.md5DigestAsHex(form.getNewPassword().getBytes(StandardCharsets.UTF_8)));
@@ -53,14 +49,18 @@ public class ClientUserController {
     }
 
     @GetMapping("/addresses")
-    public ResultVO<List<UserAddress>> addresses(jakarta.servlet.http.HttpServletRequest request) {
-        return ResultVO.success(addressService.lambdaQuery().eq(UserAddress::getUserId, getUserId(request)).orderByDesc(UserAddress::getIsDefault).list());
+    public ResultVO<List<UserAddress>> addresses() {
+        Long userId = UserContext.getUserId();
+        return ResultVO.success(addressService.lambdaQuery()
+                .eq(UserAddress::getUserId, userId)
+                .orderByDesc(UserAddress::getIsDefault).list());
     }
 
     @PostMapping("/addresses")
-    public ResultVO<?> addAddress(@RequestBody UserAddress addr, jakarta.servlet.http.HttpServletRequest request) {
-        addr.setUserId(getUserId(request));
-        if (addr.getIsDefault() != null && addr.getIsDefault() == 1) clearDefault(getUserId(request));
+    public ResultVO<?> addAddress(@RequestBody UserAddress addr) {
+        Long userId = UserContext.getUserId();
+        addr.setUserId(userId);
+        if (addr.getIsDefault() != null && addr.getIsDefault() == 1) clearDefault(userId);
         addressService.save(addr);
         return ResultVO.success();
     }

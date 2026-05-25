@@ -4,11 +4,89 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d1e07eb-bba8-4f6c-969c-27ea67091e57" name="更改" comment="" />
+    <list default="true" id="3d1e07eb-bba8-4f6c-969c-27ea67091e57" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.claude/skills/mf-fertilizer.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/mf-fertilizer.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/FertilizerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/FertilizerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/config/JwtInterceptorConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/config/JwtInterceptorConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientCartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientCartController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientFavoriteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientFavoriteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientFeedbackController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientFeedbackController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientHistoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientHistoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientMessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientMessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientOrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientPointsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientPointsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/java/com/mf/fertilizer/controller/client/ClientUserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fertilizer-api/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/fertilizer-api/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Activities-XjxQohj6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Admins-CpBAV_TG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Articles-D1VNl4qD.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Categories-DgLL-zoa.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Comments-DYvYFD4U.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Config-ChOhKNa7.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Encyclopedia-DlLShlZc.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Faqs-BVgWlAsg.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Feedbacks-DF7ZIwvN.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Logs-DnDn2OzU.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Messages-H4fe4JLv.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Orders-Bu67CL-U.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Orders-CoR2bmvj.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Products-DgyrQXch.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Uploads-oINSdOut.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/Users-C73DrKGx.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/auth-CCcwlRfs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-B2V5cyQt.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-BME4S_Oy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-BPwZO64l.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-BjZJ-ST6.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-CmXFS06d.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-DpY6Ihzq.css" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-DpY6Ihzq.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-KJDzfK_T.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-LFa20wnO.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-UN-f736R.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/index-eeS0tr02.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/assets/request-DMMgJEa6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/@element-plus_icons-vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/@element-plus_icons-vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/@element-plus_icons-vue.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/@element-plus_icons-vue.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/axios.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/axios.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-BXRPTJTD.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-BXRPTJTD.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-UC4PQXLF.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-UC4PQXLF.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/element-plus.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/element-plus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/element-plus.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/element-plus.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/pinia.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/pinia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/pinia.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/pinia.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue-router.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue-router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue-router.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue-router.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../mf-frontend/node_modules/.vite/deps/vue.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../完整的项目全景介绍.md" beforeDir="false" afterPath="$PROJECT_DIR$/../完整的项目全景介绍.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -27,7 +105,9 @@
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.FertilizerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -83,6 +163,12 @@
       <workItem from="1778917228199" duration="12364000" />
       <workItem from="1778944498966" duration="5084000" />
       <workItem from="1778999643843" duration="693000" />
+      <workItem from="1779528699222" duration="3532000" />
+      <workItem from="1779592755085" duration="7337000" />
+      <workItem from="1779691990723" duration="846000" />
+      <workItem from="1779692862063" duration="31000" />
+      <workItem from="1779696047591" duration="1166000" />
+      <workItem from="1779712544148" duration="11720000" />
     </task>
     <servers />
   </component>

@@ -26,6 +26,7 @@ com\mf\fertilizer\entity\Fertilizer.class
 com\mf\fertilizer\vo\PageVO.class
 com\mf\fertilizer\vo\client\EncyclopediaArticleVO.class
 com\mf\fertilizer\vo\client\UserLoginResultVO.class
+com\mf\fertilizer\annotation\OperationLog.class
 com\mf\fertilizer\entity\VerificationCode.class
 com\mf\fertilizer\entity\BrowsingHistory.class
 com\mf\fertilizer\entity\FertilizationRecord.class
@@ -83,3 +84,4 @@ com\mf\fertilizer\constant\RedisKey.class
 com\mf\fertilizer\dto\TreeQueryDTO.class
 com\mf\fertilizer\dto\LoginDTO.class
 com\mf\fertilizer\entity\OrderItem.class
+com\mf\fertilizer\context\UserContext.class

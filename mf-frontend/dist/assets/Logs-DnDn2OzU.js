@@ -1,1 +1,0 @@
-import{_ as t,g as o,d as e,r as a}from"./index-eeS0tr02.js";const n={},r={class:"page-container"};function c(l,s){return a(),o("div",r,[...s[0]||(s[0]=[e("div",{class:"toolbar"},[e("span",{class:"toolbar-title"},"系统日志")],-1),e("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"日志 - 对接 /admin/logs API",-1)])])}const i=t(n,[["render",c]]);export{i as default};

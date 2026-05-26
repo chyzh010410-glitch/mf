@@ -1,5 +1,6 @@
 F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\aspect\OperationLogAspect.java
 F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\config\AsyncConfig.java
+F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\config\CacheConfig.java
 F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\config\CorsConfig.java
 F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\config\GlobalExceptionHandler.java
 F:\IdeaProjects\mf\mf-fertilizer\fertilizer-api\src\main\java\com\mf\fertilizer\config\JacksonConfig.java

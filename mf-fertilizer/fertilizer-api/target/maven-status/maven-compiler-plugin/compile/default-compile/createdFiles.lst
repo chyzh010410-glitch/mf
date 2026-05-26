@@ -45,6 +45,7 @@ com\mf\fertilizer\config\JwtInterceptorConfig.class
 com\mf\fertilizer\config\RedisConfig.class
 com\mf\fertilizer\controller\client\ClientPointsController.class
 com\mf\fertilizer\aspect\OperationLogAspect.class
+com\mf\fertilizer\config\CacheConfig.class
 com\mf\fertilizer\config\JacksonConfig.class
 com\mf\fertilizer\controller\client\ClientOrderController$CancelRequest.class
 com\mf\fertilizer\controller\client\ClientCommentController.class

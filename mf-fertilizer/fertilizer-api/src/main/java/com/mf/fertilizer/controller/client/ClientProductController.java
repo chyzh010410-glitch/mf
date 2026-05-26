@@ -12,6 +12,7 @@ import com.mf.fertilizer.vo.PageVO;
 import com.mf.fertilizer.vo.ResultVO;
 import com.mf.fertilizer.vo.client.ProductVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class ClientProductController {
     private final ProductCategoryService categoryService;
 
     @GetMapping
+    @Cacheable(value = "products", key = "'p' + #page.page + ':s' + #page.size + ':pt' + (#productType != null ? #productType : 'all') + ':cid' + (#categoryId != null ? #categoryId : 'all') + ':sort' + (#sort != null ? #sort : 'default')")
     public ResultVO<PageVO<ProductVO>> list(@ModelAttribute PageDTO page,
                                             @RequestParam(name = "categoryId", required = false) Long categoryId,
                                             @RequestParam(name = "keyword", required = false) String keyword,
@@ -35,6 +37,7 @@ public class ClientProductController {
                                             @RequestParam(name = "maxPrice", required = false) java.math.BigDecimal maxPrice) {
         var wrapper = new LambdaQueryWrapper<Product>()
                 .eq(Product::getStatus, 1)
+                .gt(Product::getStock, 0)
                 .eq(categoryId != null, Product::getCategoryId, categoryId)
                 .eq(productType != null, Product::getProductType, productType)
                 .like(keyword != null, Product::getName, keyword)

@@ -25,11 +25,11 @@ public class ClientHomeController {
         var banners = new ArrayList<HomePageVO.BannerItem>();
         for (var a : activities) banners.add(new HomePageVO.BannerItem(a.getId(), a.getCoverImage(), a.getTitle(), "activity"));
         vo.setBanners(banners);
-        var products = productService.lambdaQuery().eq(Product::getStatus, 1).eq(Product::getIsRecommend, 1).orderByDesc(Product::getSalesCount).last("limit 8").list();
+        var products = productService.lambdaQuery().eq(Product::getStatus, 1).gt(Product::getStock, 0).eq(Product::getIsRecommend, 1).orderByDesc(Product::getSalesCount).last("limit 8").list();
         var pcs = new ArrayList<HomePageVO.ProductCard>();
         for (var p : products) pcs.add(new HomePageVO.ProductCard(p.getId(), p.getName(), p.getCoverImage(), p.getPrice(), p.getSalesCount()));
         vo.setRecommendedProducts(pcs);
-        var newProducts = productService.lambdaQuery().eq(Product::getStatus, 1).orderByDesc(Product::getCreateTime).last("limit 8").list();
+        var newProducts = productService.lambdaQuery().eq(Product::getStatus, 1).gt(Product::getStock, 0).orderByDesc(Product::getCreateTime).last("limit 8").list();
         var nps = new ArrayList<HomePageVO.ProductCard>();
         for (var p : newProducts) nps.add(new HomePageVO.ProductCard(p.getId(), p.getName(), p.getCoverImage(), p.getPrice(), p.getSalesCount()));
         vo.setNewProducts(nps);

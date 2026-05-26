@@ -12,6 +12,7 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
   const res = response.data
   if (res.code && res.code !== 200) {
+    console.error(`[${response.config.method.toUpperCase()}] ${response.config.url} →`, res.code, res.msg)
     ElMessage.error(res.msg || '请求失败')
     return Promise.reject(new Error(res.msg))
   }
@@ -22,7 +23,9 @@ service.interceptors.response.use((response) => {
     ElMessage.error('登录已过期，请重新登录')
     window.location.href = '/login'
   } else {
-    ElMessage.error(error.response?.data?.msg || '网络异常')
+    const msg = error.response?.data?.msg || '网络异常'
+    console.error(`[${error.config?.method?.toUpperCase()}] ${error.config?.url} →`, error.response?.status, msg)
+    ElMessage.error(msg)
   }
   return Promise.reject(error)
 })

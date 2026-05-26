@@ -12,10 +12,12 @@ com\mf\fertilizer\serviceImpl\FertilizationRuleServiceImpl.class
 com\mf\fertilizer\serviceImpl\UserUploadServiceImpl.class
 com\mf\fertilizer\mapper\UserUploadMapper.class
 com\mf\fertilizer\service\EncyclopediaEntryService.class
+com\mf\fertilizer\serviceImpl\NotificationServiceImpl.class
 com\mf\fertilizer\serviceImpl\UserAddressServiceImpl.class
 com\mf\fertilizer\serviceImpl\MessageServiceImpl.class
 com\mf\fertilizer\serviceImpl\ActivityEntityServiceImpl.class
 com\mf\fertilizer\serviceImpl\EncyclopediaArticleServiceImpl.class
+com\mf\fertilizer\service\NotificationService.class
 com\mf\fertilizer\service\ProductService.class
 com\mf\fertilizer\service\UserService.class
 com\mf\fertilizer\mapper\VerificationCodeMapper.class
@@ -26,7 +28,6 @@ com\mf\fertilizer\serviceImpl\ProductDetailServiceImpl.class
 com\mf\fertilizer\mapper\FertilizationRuleMapper.class
 com\mf\fertilizer\service\ProductDetailService.class
 com\mf\fertilizer\service\SystemLogService.class
-com\mf\fertilizer\serviceImpl\FertilizerServiceImpl$1.class
 com\mf\fertilizer\mapper\BrowsingHistoryMapper.class
 com\mf\fertilizer\serviceImpl\FavoriteServiceImpl.class
 com\mf\fertilizer\service\FaqService.class
@@ -69,7 +70,6 @@ com\mf\fertilizer\mapper\PointsRecordMapper.class
 com\mf\fertilizer\mapper\ProductCategoryMapper.class
 com\mf\fertilizer\service\PointsRecordService.class
 com\mf\fertilizer\service\FertilizationRuleService.class
-com\mf\fertilizer\serviceImpl\FertilizationRuleServiceImpl$1.class
 com\mf\fertilizer\serviceImpl\ProductCategoryServiceImpl.class
 com\mf\fertilizer\mapper\MessageMapper.class
 com\mf\fertilizer\mapper\TreeMapper.class

@@ -224,7 +224,7 @@ const handleSubmit = async () => {
     const res = await createOrder({ addressId: selectedAddress.value.id, items })
     if (res.code === 200) {
       ElMessage.success('下单成功！')
-      router.push('/order/list')
+      router.push('/orders')
     }
   } catch {} finally { submitting.value = false }
 }

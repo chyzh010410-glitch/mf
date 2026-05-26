@@ -20,7 +20,7 @@ public class OrderTimeoutTask {
     private final StringRedisTemplate redisTemplate;
 
     private static final String LOCK_KEY = "task:order_timeout:lock";
-    private static final long TIMEOUT_MINUTES = 30;
+    private static final long TIMEOUT_MINUTES = 1;
 
     @Scheduled(cron = "0 * * * * ?")
     public void cancelTimeoutOrders() {

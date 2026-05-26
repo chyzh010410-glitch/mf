@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 @RequestMapping("/client/orders")
@@ -36,6 +37,9 @@ public class ClientOrderController {
     private final ShoppingCartItemService cartService;
     private final JdbcTemplate jdbcTemplate;
     private final StringRedisTemplate redisTemplate;
+    private final NotificationService notificationService;
+
+    private final ReentrantLock stockLock = new ReentrantLock();
 
     @PostMapping
     @Transactional
@@ -55,33 +59,39 @@ public class ClientOrderController {
 
         BigDecimal total = BigDecimal.ZERO;
         var items = new ArrayList<OrderItem>();
-        for (var itemDto : dto.getItems()) {
-            var product = productService.getById(itemDto.getProductId());
-            if (product == null || product.getStatus() == 0) return ResultVO.fail(400, "商品「" + itemDto.getProductId() + "」不存在或已下架");
-            if (product.getStock() < itemDto.getQuantity()) return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
 
-            // Redis 原子扣库存，防止超卖
-            String stockKey = "stock:product:" + product.getId();
-            redisTemplate.opsForValue().setIfAbsent(stockKey, String.valueOf(product.getStock()));
-            Long remaining = redisTemplate.opsForValue().decrement(stockKey, itemDto.getQuantity());
-            if (remaining != null && remaining < 0) {
-                redisTemplate.opsForValue().increment(stockKey, itemDto.getQuantity());
-                return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
+        // ReentrantLock 加锁，防止并发下单导致超卖
+        stockLock.lock();
+        try {
+            for (var itemDto : dto.getItems()) {
+                var product = productService.getById(itemDto.getProductId());
+                if (product == null || product.getStatus() == 0) return ResultVO.fail(400, "商品「" + itemDto.getProductId() + "」不存在或已下架");
+                if (product.getStock() < itemDto.getQuantity()) return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
+
+                String stockKey = "stock:product:" + product.getId();
+                redisTemplate.opsForValue().setIfAbsent(stockKey, String.valueOf(product.getStock()));
+                Long remaining = redisTemplate.opsForValue().decrement(stockKey, itemDto.getQuantity());
+                if (remaining != null && remaining < 0) {
+                    redisTemplate.opsForValue().increment(stockKey, itemDto.getQuantity());
+                    return ResultVO.fail(400, "商品「" + product.getName() + "」库存不足");
+                }
+
+                var oi = new OrderItem();
+                oi.setOrderNo(orderNo);
+                oi.setProductId(product.getId());
+                oi.setProductName(product.getName());
+                oi.setProductImage(product.getCoverImage());
+                oi.setPrice(product.getPrice());
+                oi.setQuantity(itemDto.getQuantity());
+                oi.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(itemDto.getQuantity())));
+                items.add(oi);
+                total = total.add(oi.getTotalPrice());
+                product.setStock(product.getStock() - itemDto.getQuantity());
+                product.setSalesCount(product.getSalesCount() + itemDto.getQuantity());
+                productService.updateById(product);
             }
-
-            var oi = new OrderItem();
-            oi.setOrderNo(orderNo);
-            oi.setProductId(product.getId());
-            oi.setProductName(product.getName());
-            oi.setProductImage(product.getCoverImage());
-            oi.setPrice(product.getPrice());
-            oi.setQuantity(itemDto.getQuantity());
-            oi.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(itemDto.getQuantity())));
-            items.add(oi);
-            total = total.add(oi.getTotalPrice());
-            product.setStock(product.getStock() - itemDto.getQuantity());
-            product.setSalesCount(product.getSalesCount() + itemDto.getQuantity());
-            productService.updateById(product);
+        } finally {
+            stockLock.unlock();
         }
 
         order.setTotalAmount(total);
@@ -108,6 +118,10 @@ public class ClientOrderController {
         result.setOrderId(order.getId());
         result.setOrderNo(orderNo);
         result.setPayAmount(total);
+
+        // @Async 异步发送订单通知（不阻塞主线程返回）
+        notificationService.sendOrderCreatedNotification(userId, orderNo);
+
         return ResultVO.success(result);
     }
 

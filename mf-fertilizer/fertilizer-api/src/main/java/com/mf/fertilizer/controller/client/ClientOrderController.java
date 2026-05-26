@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -92,9 +93,16 @@ public class ClientOrderController {
             item.setOrderId(order.getId());
             orderItemService.save(item);
         }
+//        for (var itemDto : dto.getItems()) {
+//            jdbcTemplate.update("DELETE FROM shopping_cart_item WHERE user_id = ? AND product_id = ?",
+//                    userId, itemDto.getProductId());
+//        }
+
         for (var itemDto : dto.getItems()) {
-            jdbcTemplate.update("DELETE FROM shopping_cart_item WHERE user_id = ? AND product_id = ?",
-                    userId, itemDto.getProductId());
+            cartService.lambdaUpdate()
+                    .eq(ShoppingCartItem::getUserId, userId)  // 条件1：匹配user_id
+                    .eq(ShoppingCartItem::getProductId, itemDto.getProductId())  // 条件2：匹配product_id
+                    .remove();  // 触发逻辑删除，自动转为UPDATE
         }
         var result = new OrderCreateResult();
         result.setOrderId(order.getId());

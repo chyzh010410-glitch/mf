@@ -50,7 +50,9 @@
       <el-divider />
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
         <el-button :type="liked?'danger':''" :icon="liked?'StarFilled':'Star'" circle @click="handleLike" />
-        <span style="font-size:14px;color:#666">{{ likeCount }} 人点赞</span>
+        <span style="font-size:14px;color:#666;margin-right:16px">{{ likeCount }} 人点赞</span>
+        <el-button :type="favorited?'warning':''" :icon="favorited?'StarFilled':'Star'" circle @click="handleFavorite" />
+        <span style="font-size:14px;color:#666">{{ favorited ? '已收藏' : '收藏' }}</span>
       </div>
       <div class="comment-section">
         <h3>评论 ({{ commentTotal }})</h3>
@@ -90,6 +92,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import { getEncyclopediaDetail } from '@/api/encyclopedia'
 import { getComments, getReplies, postComment } from '@/api/comment'
 import { checkLike, toggleLike } from '@/api/like'
+import { getFavorites, addFavorite, removeFavorite } from '@/api/favorite'
 
 const route = useRoute()
 const entry = ref(null)
@@ -104,6 +107,30 @@ const fetchLike = async () => {
 const handleLike = async () => {
   try { const r=await toggleLike({targetType:'encyclopedia',targetId:Number(route.params.id)}); if(r.code===200){ liked.value=r.data.liked; liked.value?likeCount.value++:likeCount.value-- } } catch {}
 }
+
+const favorited = ref(false)
+const favoriteId = ref(null)
+const fetchFavorite = async () => {
+  try { const r=await getFavorites({targetType:'encyclopedia',targetId:Number(route.params.id),page:1,size:1})
+    if(r.code===200&&r.data&&r.data.records.length>0){ favorited.value=true; favoriteId.value=r.data.records[0].id } } catch {}
+}
+const handleFavorite = async () => {
+  try {
+    if(favorited.value){ await removeFavorite(favoriteId.value); favorited.value=false; favoriteId.value=null }
+    else { const r=await addFavorite({targetType:'encyclopedia',targetId:Number(route.params.id)}); if(r.code===200&&r.data){ favorited.value=true; favoriteId.value=r.data.id } }
+  } catch {}
+}
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    const res = await getEncyclopediaDetail(route.params.id)
+    if (res.code === 200) entry.value = res.data
+  } catch { /* ignore */ } finally { loading.value = false }
+  fetchLike()
+  fetchFavorite()
+  fetchComments()
+})
 
 // 评论
 const comments = ref([])

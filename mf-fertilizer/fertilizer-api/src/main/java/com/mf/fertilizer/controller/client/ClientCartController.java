@@ -11,6 +11,7 @@ import com.mf.fertilizer.vo.ResultVO;
 import com.mf.fertilizer.vo.client.CartVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ public class ClientCartController {
 
     private final ShoppingCartItemService cartService;
     private final ProductService productService;
+    private final JdbcTemplate jdbcTemplate;
 
     @GetMapping
     public ResultVO<CartVO> list() {
@@ -55,6 +57,7 @@ public class ClientCartController {
     @PostMapping
     public ResultVO<?> add(@Valid @RequestBody CartAddDTO dto) {
         Long userId = UserContext.getUserId();
+        // lambdaQuery 自动带 deleted=0 过滤，先查有效记录
         var existing = cartService.lambdaQuery()
                 .eq(ShoppingCartItem::getUserId, userId)
                 .eq(ShoppingCartItem::getProductId, dto.getProductId()).one();
@@ -62,21 +65,33 @@ public class ClientCartController {
             existing.setQuantity(existing.getQuantity() + dto.getQuantity());
             cartService.updateById(existing);
         } else {
-            try {
+            // selectByMap/selectList 都被 @TableLogic 自动追加 deleted=0，查不到逻辑删除的记录
+            // 用 JdbcTemplate 原生 SQL 绕过 MyBatis-Plus 的 @TableLogic 过滤
+            var deletedList = jdbcTemplate.query(
+                    "SELECT * FROM shopping_cart_item WHERE user_id = ? AND product_id = ?",
+                    (rs, rowNum) -> {
+                        var item = new ShoppingCartItem();
+                        item.setId(rs.getLong("id"));
+                        item.setUserId(rs.getLong("user_id"));
+                        item.setProductId(rs.getLong("product_id"));
+                        item.setQuantity(rs.getInt("quantity"));
+                        item.setSelected(rs.getInt("selected"));
+                        item.setDeleted(rs.getInt("deleted"));
+                        return item;
+                    }, userId, dto.getProductId());
+            if (!deletedList.isEmpty()) {
+                var restored = deletedList.get(0);
+                // updateById 也会被 @TableLogic 追加 WHERE deleted=0，必须用原生 SQL
+                jdbcTemplate.update(
+                        "UPDATE shopping_cart_item SET deleted=0, quantity=?, selected=1 WHERE id=?",
+                        dto.getQuantity(), restored.getId());
+            } else {
                 var item = new ShoppingCartItem();
                 item.setUserId(userId);
                 item.setProductId(dto.getProductId());
                 item.setQuantity(dto.getQuantity());
                 item.setSelected(1);
                 cartService.save(item);
-            } catch (org.springframework.dao.DuplicateKeyException e) {
-                var dup = cartService.lambdaQuery()
-                        .eq(ShoppingCartItem::getUserId, userId)
-                        .eq(ShoppingCartItem::getProductId, dto.getProductId()).one();
-                if (dup != null) {
-                    dup.setQuantity(dup.getQuantity() + dto.getQuantity());
-                    cartService.updateById(dup);
-                }
             }
         }
         return ResultVO.success();

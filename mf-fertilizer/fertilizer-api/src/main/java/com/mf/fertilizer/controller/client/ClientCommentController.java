@@ -22,7 +22,7 @@ public class ClientCommentController {
     @GetMapping
     public ResultVO<PageVO<CommunityComment>> list(@ModelAttribute PageDTO page,
                                                     @RequestParam String targetType,
-                                                    @RequestParam Long targetId) {
+                                                    @RequestParam String targetId) {
         var p = commentService.lambdaQuery()
                 .eq(CommunityComment::getTargetType, targetType)
                 .eq(CommunityComment::getTargetId, targetId)

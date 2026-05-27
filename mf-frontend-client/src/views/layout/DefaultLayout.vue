@@ -14,6 +14,7 @@
           <router-link to="/encyclopedia">树木百科</router-link>
           <router-link to="/articles">科普文章</router-link>
           <router-link to="/activities">优惠活动</router-link>
+          <router-link to="/ai" style="color:#e6a23c">AI 客服</router-link>
         </nav>
         <div class="header-actions">
           <el-badge v-if="unreadCount" :value="unreadCount" :max="99">

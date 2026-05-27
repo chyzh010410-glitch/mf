@@ -27,7 +27,8 @@ const routes = [
       { path: 'messages', name: 'Messages', component: () => import('@/views/message/index.vue'), meta: { title: '消息中心' } },
       { path: 'faq', name: 'Faq', component: () => import('@/views/faq/index.vue'), meta: { title: '帮助中心' } },
       { path: 'feedback', name: 'Feedback', component: () => import('@/views/feedback/index.vue'), meta: { title: '意见反馈' } },
-      { path: 'activities', name: 'Activities', component: () => import('@/views/activity/index.vue'), meta: { title: '优惠活动' } }
+      { path: 'activities', name: 'Activities', component: () => import('@/views/activity/index.vue'), meta: { title: '优惠活动' } },
+      { path: 'ai', name: 'AiChat', component: () => import('@/views/ai/index.vue'), meta: { title: 'AI 智能客服' } }
     ]
   }
 ]

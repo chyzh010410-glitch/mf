@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
-const service = axios.create({ baseURL: 'http://localhost:8080', timeout: 15000 })
+const service = axios.create({ baseURL: 'http://localhost:8080', timeout: 60000 })
 
 service.interceptors.request.use((config) => {
   const token = localStorage.getItem('clientToken')

@@ -58,7 +58,7 @@ mf-ai/data/chroma_db/
 # 如果你的项目中还有其他 chroma_db，直接写下面这行也通用
 # chroma_db/
 
-# 其他临时/无关文件
+# 其他临时/无关文件1
 *.log
 .DS_Store
 Thumbs.db

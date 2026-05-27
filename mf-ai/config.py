@@ -17,7 +17,7 @@ MYSQL_CONFIG = {
 os.environ["HF_ENDPOINT"] = os.getenv("HF_ENDPOINT", "https://hf-mirror.com")
 
 # LLM 配置（DeepSeek 兼容 OpenAI API 格式）
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "sk-601c25a69f48402cac2e52ba756ac379")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "你的DeepSeek的API key")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1")
 LLM_MODEL = os.getenv("LLM_MODEL", " deepseek-v4-flash")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "shibing624/text2vec-base-chinese")  # 中文向量模型

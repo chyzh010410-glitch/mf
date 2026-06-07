@@ -1,1 +1,0 @@
-import e from"./request-C9gRQbLZ.js";function u(){return e({url:"/client/cart",method:"get"})}function a(t,r){return e({url:`/client/cart/${t}`,method:"put",data:r})}function c(t){return e({url:`/client/cart/${t}`,method:"delete"})}export{u as g,c as r,a as u};

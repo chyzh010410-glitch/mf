@@ -1,1 +1,0 @@
-import{a as t,g as a,d as s,s as n}from"./index-cEctoLGk.js";const o={},c={class:"page-container"};function r(i,e){return n(),a("div",c,[...e[0]||(e[0]=[s("h2",{class:"section-title"},"树木百科",-1),s("p",{style:{padding:"40px"}},"百科知识库加载中，敬请期待...",-1)])])}const l=t(o,[["render",r]]);export{l as default};

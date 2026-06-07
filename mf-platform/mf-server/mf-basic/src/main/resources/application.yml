@@ -1,0 +1,51 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+server:
+  port: 8085
+spring:
+  application:
+    name: mf-basic
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+        password: nacos
+        server-addr: 127.0.0.1:8848
+        username: nacos
+      discovery:
+        enabled: true
+        ip: 127.0.0.1
+        password: nacos
+        port: 8085
+        register-enabled: true
+        server-addr: 127.0.0.1:8848
+        service: mf-basic
+        username: nacos
+  data:
+    redis:
+      host: localhost
+      password: 123456
+      port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 123456
+    url: jdbc:mysql://localhost:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+    time-zone: Asia/Shanghai

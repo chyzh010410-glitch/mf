@@ -1,0 +1,19 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: mf-content
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+        password: nacos
+        server-addr: localhost:8848
+        username: nacos
+      discovery:
+        password: nacos
+        server-addr: localhost:8848
+        username: nacos
+  config:
+    import: optional:nacos:${spring.application.name}.yml

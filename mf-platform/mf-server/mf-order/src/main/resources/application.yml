@@ -1,0 +1,57 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+server:
+  port: 8083
+spring:
+  application:
+    name: mf-order
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+        password: nacos
+        server-addr: 127.0.0.1:8848
+        username: nacos
+      discovery:
+        ip: 127.0.0.1
+        password: nacos
+        port: 8083
+        server-addr: 127.0.0.1:8848
+        service: mf-order
+        username: nacos
+  config:
+    import: optional:nacos:mf-order.yml
+  data:
+    redis:
+      host: localhost
+      password: 123456
+      port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+    time-zone: Asia/Shanghai
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

@@ -1,1 +1,0 @@
-import{a as s,g as c,d as t,s as n}from"./index-cEctoLGk.js";const o={},a={class:"page-container"};function r(i,e){return n(),c("div",a,[...e[0]||(e[0]=[t("h2",{class:"section-title"},"账户安全",-1),t("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"安全设置加载中...",-1)])])}const d=s(o,[["render",r]]);export{d as default};

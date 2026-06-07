@@ -1,1 +1,0 @@
-import{a as s,g as n,d as t,s as o}from"./index-cEctoLGk.js";const a={},c={class:"page-container"};function r(i,e){return o(),n("div",c,[...e[0]||(e[0]=[t("h2",{class:"section-title"},"我的积分",-1),t("p",{style:{padding:"40px","text-align":"center",color:"#999"}},"积分记录加载中...",-1)])])}const d=s(a,[["render",r]]);export{d as default};

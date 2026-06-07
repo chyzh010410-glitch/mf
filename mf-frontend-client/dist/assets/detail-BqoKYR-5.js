@@ -1,1 +1,0 @@
-import{a as s,g as a,d as t,s as n}from"./index-cEctoLGk.js";const c={},o={class:"page-container"};function r(i,e){return n(),a("div",o,[...e[0]||(e[0]=[t("h2",{class:"section-title"},"订单详情",-1),t("p",{style:{padding:"60px","text-align":"center"}},"订单加载中...",-1)])])}const l=s(c,[["render",r]]);export{l as default};

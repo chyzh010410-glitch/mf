@@ -12,7 +12,10 @@
       "Bash(printf \"import request from '@/utils/request'\\\\nexport function getFavorites\\(params\\) { return request\\({ url: '/client/favorites', method: 'get', params }\\) }\\\\nexport function addFavorite\\(data\\) { return request\\({ url: '/client/favorites', method: 'post', data }\\) }\\\\nexport function removeFavorite\\(id\\) { return request\\({ url: '/client/favorites/'+id, method: 'delete' }\\) }\\\\n\")",
       "Bash(printf \"import request from '@/utils/request'\\\\nexport function getHistory\\(params\\) { return request\\({ url: '/client/history', method: 'get', params }\\) }\\\\nexport function clearHistory\\(\\) { return request\\({ url: '/client/history', method: 'delete' }\\) }\\\\n\")",
       "Bash(git add *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python3 F:/IdeaProjects/mf/mf-platform/fix_config.py)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 *)"
     ]
   }
 }

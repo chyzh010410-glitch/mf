@@ -1,1 +1,0 @@
-import{a as t,g as n,d as s,s as a}from"./index-cEctoLGk.js";const o={},c={class:"page-container"};function r(d,e){return a(),n("div",c,[...e[0]||(e[0]=[s("h2",{class:"section-title"},"优惠活动",-1),s("p",{style:{padding:"40px"}},"活动加载中...",-1)])])}const l=t(o,[["render",r]]);export{l as default};

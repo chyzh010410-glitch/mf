@@ -1,0 +1,80 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+server:
+  port: 8080
+spring:
+  application:
+    name: mf-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: mf-user-auth
+        predicates:
+        - Path=/login,/logout
+        uri: lb://mf-user
+      - id: mf-user
+        predicates:
+        - Path=/client/auth/**,/client/user/**,/client/addresses/**,/client/points/**
+        uri: lb://mf-user
+      - id: mf-product
+        predicates:
+        - Path=/client/products/**,/client/categories/**,/client/cart/**
+        uri: lb://mf-product
+      - id: mf-order
+        predicates:
+        - Path=/client/orders/**
+        uri: lb://mf-order
+      - id: mf-content
+        predicates:
+        - Path=/client/encyclopedia/**,/client/articles/**,/client/comments/**,/client/likes/**,/client/favorites/**,/client/history/**,/client/messages/**,/client/feedback/**,/client/faq/**,/client/activities/**,/client/home/**
+        uri: lb://mf-content
+      - id: mf-basic
+        predicates:
+        - Path=/tree/**,/fertilizer/**,/record/**,/rule/**,/admin/logs/**
+        uri: lb://mf-basic
+      - id: mf-admin-user
+        predicates:
+        - Path=/admin/users/**,/admin/admins/**
+        uri: lb://mf-user
+      - id: mf-admin-product
+        predicates:
+        - Path=/admin/products/**,/admin/categories/**
+        uri: lb://mf-product
+      - id: mf-admin-order
+        predicates:
+        - Path=/admin/orders/**
+        uri: lb://mf-order
+      - id: mf-admin-content
+        predicates:
+        - Path=/admin/encyclopedia/**,/admin/articles/**,/admin/comments/**,/admin/uploads/**,/admin/feedbacks/**,/admin/faqs/**,/admin/messages/**,/admin/activities/**,/admin/ai/**
+        uri: lb://mf-content
+    nacos:
+      config:
+        import-check:
+          enabled: false
+        password: nacos
+        server-addr: 127.0.0.1:8848
+        username: nacos
+      discovery:
+        ip: 127.0.0.1
+        password: nacos
+        port: 8080
+        server-addr: 127.0.0.1:8848
+        service: mf-gateway
+        username: nacos
+  config:
+    import: optional:nacos:mf-gateway.yml
+  data:
+    redis:
+      host: localhost
+      password: 123456
+      port: 6379
+  main:
+    web-application-type: reactive

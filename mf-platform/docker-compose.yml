@@ -1,0 +1,151 @@
+version: "3.8"
+
+services:
+  # ============ 微服务 ============
+  mf-gateway:
+    build: mf-server/mf-gateway
+    ports: ["8080:8080"]
+    depends_on: [nacos, redis]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATA_REDIS_HOST=redis
+
+  mf-user:
+    build: mf-server/mf-user
+    ports: ["8081:8081"]
+    depends_on: [nacos, redis, mysql]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATA_REDIS_HOST=redis
+
+  mf-product:
+    build: mf-server/mf-product
+    ports: ["8082:8082"]
+    depends_on: [nacos, redis, mysql, kafka]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  mf-order:
+    build: mf-server/mf-order
+    ports: ["8083:8083"]
+    depends_on: [nacos, redis, mysql, kafka]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  mf-content:
+    build: mf-server/mf-content
+    ports: ["8084:8084"]
+    depends_on: [nacos, redis, mysql]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATA_REDIS_HOST=redis
+
+  mf-basic:
+    build: mf-server/mf-basic
+    ports: ["8085:8085"]
+    depends_on: [nacos, redis, mysql]
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fertilizer?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATA_REDIS_HOST=redis
+
+  # ============ AI 服务 ============
+  mf-ai:
+    build: ../../mf-ai
+    ports: ["5000:5000"]
+    depends_on: [mysql]
+    environment:
+      - MYSQL_HOST=mysql
+
+  # ============ 前端 ============
+  mf-admin-frontend:
+    build: vue3/admin
+    ports: ["5173:80"]
+
+  mf-client-frontend:
+    build: vue3/client
+    ports: ["5174:80"]
+
+  # ============ 中间件 ============
+  mysql:
+    image: mysql:8.0
+    ports: ["3306:3306"]
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: fertilizer
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ../mf-fertilizer/fertilizer-api/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ../mf-fertilizer/fertilizer-api/src/main/resources/db/init-products.sql:/docker-entrypoint-initdb.d/2-init-products.sql
+
+  redis:
+    image: redis:6.0.8
+    ports: ["6379:6379"]
+    command: redis-server --requirepass 123456
+
+  nacos:
+    image: nacos/nacos-server:v2.3.0
+    ports: ["8848:8848","9848:9848"]
+    environment:
+      MODE: standalone
+
+  kafka:
+    image: wurstmeister/kafka
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on: [zookeeper]
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports: ["2181:2181"]
+
+  elasticsearch:
+    image: elasticsearch:8.5.2
+    ports: ["9200:9200"]
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      xpack.security.enabled: "false"
+
+  kibana:
+    image: kibana:8.5.2
+    ports: ["5601:5601"]
+    depends_on: [elasticsearch]
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      I18N_LOCALE: zh-CN
+
+  logstash:
+    image: logstash:8.5.2
+    ports: ["5000:5000"]
+    depends_on: [elasticsearch]
+    volumes:
+      - C:/Users/Chyzh/logstash/pipeline:/usr/share/logstash/pipeline
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    ports: ["9090:9090"]
+    volumes:
+      - C:/Users/Chyzh/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+
+volumes:
+  mysql-data:

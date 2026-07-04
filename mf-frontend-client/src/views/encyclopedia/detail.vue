@@ -3,10 +3,17 @@
     <div class="back-bar">
       <el-button text :icon="ArrowLeft" @click="$router.back()">返回百科</el-button>
     </div>
+
     <div v-if="entry" class="detail-wrap">
-      <div class="cover-wrap" :style="{background: entry.coverImage ? 'url('+entry.coverImage+') center/cover' : '#e8f5e9'}">
-        <span v-if="!entry.coverImage" style="font-size:80px">🌳</span>
+      <el-carousel v-if="carouselImages.length" class="content-carousel" height="340px" indicator-position="outside">
+        <el-carousel-item v-for="image in carouselImages" :key="image">
+          <el-image :src="resolveImageUrl(image)" fit="cover" class="carousel-image" />
+        </el-carousel-item>
+      </el-carousel>
+      <div v-else class="cover-wrap">
+        <span style="font-size:64px">百科</span>
       </div>
+
       <h1 class="entry-name">{{ entry.name }}</h1>
       <p class="sci-name" v-if="entry.scientificName"><i>{{ entry.scientificName }}</i></p>
       <p class="alias-info" v-if="entry.alias">别名：{{ entry.alias }}</p>
@@ -47,6 +54,7 @@
         <h3>价值说明</h3>
         <p>{{ entry.valueDescription }}</p>
       </div>
+
       <el-divider />
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
         <el-button :type="liked?'danger':''" :icon="liked?'StarFilled':'Star'" circle @click="handleLike" />
@@ -54,6 +62,7 @@
         <el-button :type="favorited?'warning':''" :icon="favorited?'StarFilled':'Star'" circle @click="handleFavorite" />
         <span style="font-size:14px;color:#666">{{ favorited ? '已收藏' : '收藏' }}</span>
       </div>
+
       <div class="comment-section">
         <h3>评论 ({{ commentTotal }})</h3>
         <div style="display:flex;gap:10px;margin-bottom:20px">
@@ -80,12 +89,13 @@
         <el-pagination v-if="commentTotal>5" v-model:current-page="commentPage" :page-size="5" :total="commentTotal" layout="prev,pager,next" size="small" style="justify-content:center" @current-change="fetchComments" />
       </div>
     </div>
+
     <el-empty v-if="!loading && !entry" description="词条不存在" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
@@ -93,12 +103,18 @@ import { getEncyclopediaDetail } from '@/api/encyclopedia'
 import { getComments, getReplies, postComment } from '@/api/comment'
 import { checkLike, toggleLike } from '@/api/like'
 import { getFavorites, addFavorite, removeFavorite } from '@/api/favorite'
+import { parseImageList, resolveImageUrl } from '@/utils/format'
 
 const route = useRoute()
 const entry = ref(null)
 const loading = ref(false)
 
-// 点赞
+const carouselImages = computed(() => {
+  if (!entry.value) return []
+  const images = parseImageList(entry.value.images)
+  return images.length ? images : (entry.value.coverImage ? [entry.value.coverImage] : [])
+})
+
 const liked = ref(false)
 const likeCount = ref(0)
 const fetchLike = async () => {
@@ -121,18 +137,6 @@ const handleFavorite = async () => {
   } catch {}
 }
 
-onMounted(async () => {
-  loading.value = true
-  try {
-    const res = await getEncyclopediaDetail(route.params.id)
-    if (res.code === 200) entry.value = res.data
-  } catch { /* ignore */ } finally { loading.value = false }
-  fetchLike()
-  fetchFavorite()
-  fetchComments()
-})
-
-// 评论
 const comments = ref([])
 const commentPage = ref(1)
 const commentTotal = ref(0)
@@ -179,6 +183,7 @@ onMounted(async () => {
     if (res.code === 200) entry.value = res.data
   } catch { /* ignore */ } finally { loading.value = false }
   fetchLike()
+  fetchFavorite()
   fetchComments()
 })
 </script>
@@ -186,7 +191,9 @@ onMounted(async () => {
 <style scoped>
 .back-bar { margin-bottom: 16px; }
 .detail-wrap { max-width: 860px; }
-.cover-wrap { height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.cover-wrap { height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: #e8f5e9; color: #9ca3af; }
+.content-carousel { border-radius: 12px; overflow: hidden; background: #f5f7f6; margin-bottom: 20px; }
+.carousel-image { width: 100%; height: 340px; display: block; }
 .entry-name { font-size: 28px; color: #1a1a1a; margin: 0 0 4px; }
 .sci-name { font-size: 16px; color: #888; margin: 0 0 8px; }
 .alias-info { font-size: 14px; color: #666; margin: 0 0 12px; }

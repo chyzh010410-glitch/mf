@@ -44,7 +44,7 @@
               style="margin-right:16px;width:110px"
               @change="() => { /* quantity adjusted locally */ }"
             />
-            <span style="font-weight:600;color:#e74c3c">¥{{ (Number(item.price) * Number(item.quantity)).toFixed(2) }}</span>
+            <span style="font-weight:600;color:#e74c3c">{{ formatCurrency(Number(item.price) * Number(item.quantity)) }}</span>
           </div>
         </div>
       </el-col>
@@ -52,15 +52,23 @@
         <div class="checkout-section summary-card">
           <h3>订单汇总</h3>
           <div class="summary-row"><span>商品数量</span><span>{{ totalCount }} 件</span></div>
-          <div class="summary-row"><span>商品总额</span><span>¥{{ totalAmount }}</span></div>
+          <div class="summary-row"><span>商品总额</span><span>{{ productAmountText }}</span></div>
+          <div class="summary-row"><span>运费</span><span>{{ freightAmountText }}</span></div>
           <el-divider />
-          <div class="summary-row summary-total"><span>应付金额</span><span style="color:#e74c3c;font-size:22px;font-weight:700">¥{{ totalAmount }}</span></div>
+          <div class="payment-method">
+            <div class="payment-title">支付方式</div>
+            <el-radio-group v-model="paymentMethod" class="payment-options">
+              <el-radio-button label="wechat">微信支付</el-radio-button>
+              <el-radio-button label="alipay">支付宝</el-radio-button>
+            </el-radio-group>
+          </div>
+          <div class="summary-row summary-total"><span>应付金额</span><span style="color:#e74c3c;font-size:22px;font-weight:700">{{ payAmountText }}</span></div>
           <el-button
             type="primary" size="large"
             style="width:100%;margin-top:20px;height:48px;font-size:16px"
             :loading="submitting" :disabled="!selectedAddress || cartItems.length === 0"
             @click="handleSubmit"
-          >提交订单</el-button>
+          >立即支付</el-button>
         </div>
       </el-col>
     </el-row>
@@ -94,6 +102,7 @@
         <el-button type="primary" :loading="savingAddr" @click="saveAddress">保存</el-button>
       </template>
     </el-dialog>
+
   </div>
 </template>
 
@@ -105,7 +114,7 @@ import { getCart } from '@/api/cart'
 import { createOrder } from '@/api/order'
 import { getAddresses, addAddress } from '@/api/address'
 import { setDefaultAddress } from '@/api/address'
-import request from '@/utils/request'
+import { formatCurrency } from '@/utils/format'
 
 const router = useRouter()
 const isBuyNow = ref(false)
@@ -116,6 +125,7 @@ const submitting = ref(false)
 const showAddrDialog = ref(false)
 const savingAddr = ref(false)
 const addrFormRef = ref(null)
+const paymentMethod = ref('wechat')
 
 const addrForm = reactive({
   receiverName: '', receiverPhone: '', region: [], detail: '', isDefault: false
@@ -141,7 +151,11 @@ const regionOptions = [
 ]
 
 const totalCount = computed(() => cartItems.value.reduce((s, i) => s + Number(i.quantity), 0))
-const totalAmount = computed(() => cartItems.value.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0).toFixed(2))
+const productAmount = computed(() => cartItems.value.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0))
+const freightAmount = computed(() => cartItems.value.reduce((s, i) => s + Number(i.freight || 0), 0))
+const productAmountText = computed(() => formatCurrency(productAmount.value))
+const freightAmountText = computed(() => freightAmount.value > 0 ? formatCurrency(freightAmount.value) : '免运费')
+const payAmountText = computed(() => formatCurrency(productAmount.value + freightAmount.value))
 
 onMounted(async () => {
   // 立即购买模式：直接用路由传过来的商品，不加载购物车
@@ -152,6 +166,7 @@ onMounted(async () => {
       ...i,
       quantity: Number(i.quantity) || 1,
       price: Number(i.price),
+      freight: Number(i.freight || 0),
       selected: 1,
       subtotal: Number(i.price) * Number(i.quantity)
     }))
@@ -161,7 +176,7 @@ onMounted(async () => {
       if (cartRes.code === 200 && cartRes.data) {
         cartItems.value = (cartRes.data.items || [])
           .filter(i => Number(i.selected) === 1)
-          .map(i => ({ ...i, quantity: Number(i.quantity) || 1, price: Number(i.price) }))
+          .map(i => ({ ...i, quantity: Number(i.quantity) || 1, price: Number(i.price), freight: Number(i.freight || 0) }))
       }
     } catch {}
   }
@@ -222,9 +237,8 @@ const handleSubmit = async () => {
       quantity: Number(i.quantity)
     }))
     const res = await createOrder({ addressId: selectedAddress.value.id, items })
-    if (res.code === 200) {
-      ElMessage.success('下单成功！')
-      router.push('/orders')
+    if (res.code === 200 && res.data) {
+      router.push({ name: 'Cashier', params: { id: res.data.orderId }, query: { method: paymentMethod.value } })
     }
   } catch {} finally { submitting.value = false }
 }
@@ -240,4 +254,9 @@ const handleSubmit = async () => {
 .checkout-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
 .summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; color: #666; }
 .summary-total { font-size: 16px; font-weight: 600; color: var(--color-text); }
+.payment-method { margin-bottom: 18px; }
+.payment-title { margin-bottom: 10px; font-weight: 600; color: var(--color-text); }
+.payment-options { width: 100%; }
+.payment-options :deep(.el-radio-button) { flex: 1; }
+.payment-options :deep(.el-radio-button__inner) { width: 100%; }
 </style>

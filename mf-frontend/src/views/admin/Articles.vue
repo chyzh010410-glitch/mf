@@ -93,7 +93,28 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="封面图">
-              <el-input v-model="formData.coverImage" placeholder="图片URL" />
+              <div class="image-upload">
+                <el-upload :show-file-list="false" :before-upload="handleCoverUpload" accept="image/*">
+                  <el-button>上传图片</el-button>
+                </el-upload>
+                <el-input v-model="formData.coverImage" placeholder="图片URL" />
+                <el-image v-if="formData.coverImage" :src="imageUrl(formData.coverImage)" fit="cover" class="cover-preview" />
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="多图">
+              <div class="gallery-upload">
+                <el-upload multiple :show-file-list="false" :before-upload="handleGalleryUpload" accept="image/*">
+                  <el-button>上传多图</el-button>
+                </el-upload>
+                <div class="gallery-list">
+                  <div v-for="(url, index) in galleryImages" :key="url" class="gallery-item">
+                    <el-image :src="imageUrl(url)" fit="cover" class="gallery-preview" />
+                    <el-button link type="danger" size="small" @click="removeGalleryImage(index)">删除</el-button>
+                  </div>
+                </div>
+              </div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -142,10 +163,12 @@ import { reactive, ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import { resolveImageUrl } from '@/utils/format'
 import {
   getArticlePage, getArticleDetail,
   saveArticle, updateArticle, deleteArticle,
-  toggleArticlePublish, toggleArticleTop, toggleArticleRecommend
+  toggleArticlePublish, toggleArticleTop, toggleArticleRecommend,
+  uploadAdminImage
 } from '@/api/admin'
 
 const queryForm = reactive({ keyword: '', isPublished: null, isRecommend: null, isTop: null, page: 1, size: 10 })
@@ -157,9 +180,11 @@ const isEdit = ref(false)
 const saving = ref(false)
 const formRef = ref(null)
 const editId = ref(null)
+const galleryImages = ref([])
+const MAX_GALLERY_IMAGES = 5
 
 const defaultForm = () => ({
-  title: '', summary: '', coverImage: '', tags: '',
+  title: '', summary: '', coverImage: '', images: '', tags: '',
   content: '', isPublished: 0, isTop: 0, isRecommend: 0
 })
 
@@ -195,22 +220,25 @@ const handleReset = () => {
 const handleAdd = () => {
   isEdit.value = false; editId.value = null
   Object.assign(formData, defaultForm())
+  galleryImages.value = []
   dialogVisible.value = true
 }
 
 const handleEdit = async (row) => {
   isEdit.value = true; editId.value = row.id
+  galleryImages.value = []
   try {
     const res = await getArticleDetail(row.id)
     if (res.code === 200 && res.data) {
       Object.assign(formData, {
         title: res.data.title || '', summary: res.data.summary || '',
-        coverImage: res.data.coverImage || '', tags: res.data.tags || '',
+        coverImage: res.data.coverImage || '', images: res.data.images || '', tags: res.data.tags || '',
         content: res.data.content || '',
         isPublished: res.data.isPublished ?? 0,
         isTop: res.data.isTop ?? 0,
         isRecommend: res.data.isRecommend ?? 0
       })
+      galleryImages.value = parseImages(res.data.images)
     }
   } catch { /* ignore */ }
   dialogVisible.value = true
@@ -221,13 +249,66 @@ const handleSave = async () => {
   if (!valid) return
   saving.value = true
   try {
+    const payload = { ...formData, images: JSON.stringify(galleryImages.value) }
     isEdit.value
-      ? await updateArticle(editId.value, formData)
-      : await saveArticle(formData)
+      ? await updateArticle(editId.value, payload)
+      : await saveArticle(payload)
     ElMessage.success(isEdit.value ? '更新成功' : '新增成功')
     dialogVisible.value = false
     fetchData()
   } catch { /* ignore */ } finally { saving.value = false }
+}
+
+const parseImages = (value) => {
+  if (!value) return []
+  if (Array.isArray(value)) return value
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return value.split(',').map(item => item.trim()).filter(Boolean)
+  }
+}
+
+const imageUrl = (url) => {
+  return resolveImageUrl(url)
+}
+
+const validateImage = (file) => {
+  if (!file.type?.startsWith('image/')) {
+    ElMessage.error('请选择图片文件')
+    return false
+  }
+  if (file.size / 1024 / 1024 > 5) {
+    ElMessage.error('图片不能超过5MB')
+    return false
+  }
+  return true
+}
+
+const handleCoverUpload = async (file) => {
+  if (!validateImage(file)) return false
+  const res = await uploadAdminImage(file, 'article_image')
+  formData.coverImage = res.data.url
+  ElMessage.success('图片上传成功')
+  return false
+}
+
+const handleGalleryUpload = async (file) => {
+  if (galleryImages.value.length >= MAX_GALLERY_IMAGES) {
+    ElMessage.warning(`文章多图最多上传 ${MAX_GALLERY_IMAGES} 张`)
+    return false
+  }
+  if (!validateImage(file)) return false
+  const res = await uploadAdminImage(file, 'article_image')
+  galleryImages.value.push(res.data.url)
+  if (!formData.coverImage) formData.coverImage = res.data.url
+  ElMessage.success('图片上传成功')
+  return false
+}
+
+const removeGalleryImage = (index) => {
+  galleryImages.value.splice(index, 1)
 }
 
 const handleDelete = (row) => {
@@ -287,3 +368,47 @@ const handleAiDraft = async () => {
 
 onMounted(() => { fetchData() })
 </script>
+
+<style scoped>
+.image-upload {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.cover-preview {
+  width: 64px;
+  height: 64px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.gallery-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.gallery-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gallery-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.gallery-preview {
+  width: 72px;
+  height: 72px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+</style>

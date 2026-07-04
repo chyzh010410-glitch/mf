@@ -43,10 +43,25 @@ export const restoreComment = (id) => request.put(`/admin/comments/${id}/restore
 // ==================== 用户上传审核 ====================
 export const getUploadPage = (params) => request.get('/admin/uploads', { params })
 export const reviewUpload = (id, data) => request.put(`/admin/uploads/${id}/review`, data)
+export const uploadAdminImage = (file, purpose = 'product_image') => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/admin/uploads/image', formData, {
+    params: { purpose },
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}
 
 // ==================== 用户管理 ====================
 export const getUserPage = (params) => request.get('/admin/users', { params })
 export const toggleUserStatus = (id, status) => request.put(`/admin/users/${id}/status`, { status })
+
+// ==================== 商家管理 ====================
+export const getMerchantPage = (params) => request.get('/admin/merchants', { params })
+export const getMerchantDetail = (id) => request.get(`/admin/merchants/${id}`)
+export const approveMerchant = (id) => request.post(`/admin/merchants/${id}/approve`)
+export const rejectMerchant = (id, auditRemark) => request.post(`/admin/merchants/${id}/reject`, { auditRemark })
+export const disableMerchant = (id) => request.post(`/admin/merchants/${id}/disable`)
 
 // ==================== 反馈处理 ====================
 export const getFeedbackPage = (params) => request.get('/admin/feedbacks', { params })
@@ -88,3 +103,12 @@ export const deleteAdmin = (id) => request.delete(`/admin/admins/${id}`)
 
 // ==================== 系统日志 ====================
 export const getLogPage = (params) => request.get('/admin/logs', { params })
+
+export const getOrderPage = (params) => request.get('/admin/orders', { params })
+export const getOrderDetail = (id) => request.get(`/admin/orders/${id}`)
+export const getOrderStatistics = () => request.get('/admin/orders/statistics')
+export const shipOrder = (id, data) => request.post(`/admin/orders/${id}/ship`, data)
+export const updateOrderStatus = (id, status) => request.post(`/admin/orders/${id}/status`, { status })
+export const refundOrder = (id, data) => request.post(`/admin/orders/${id}/refund`, data)
+
+export const getPaymentPage = (params) => request.get('/admin/payments', { params })

@@ -3,10 +3,17 @@
     <div class="back-bar">
       <el-button text :icon="ArrowLeft" @click="$router.back()">返回文章列表</el-button>
     </div>
+
     <div v-if="article" class="detail-wrap">
-      <div class="cover-wrap" :style="{background: article.coverImage ? 'url('+article.coverImage+') center/cover' : '#f5f0e8'}">
-        <span v-if="!article.coverImage" style="font-size:64px">📝</span>
+      <el-carousel v-if="carouselImages.length" class="content-carousel" height="320px" indicator-position="outside">
+        <el-carousel-item v-for="image in carouselImages" :key="image">
+          <el-image :src="resolveImageUrl(image)" fit="cover" class="carousel-image" />
+        </el-carousel-item>
+      </el-carousel>
+      <div v-else class="cover-wrap">
+        <span style="font-size:64px">文章</span>
       </div>
+
       <h1 class="article-title">{{ article.title }}</h1>
       <div class="meta-row">
         <span v-if="article.tags">
@@ -15,6 +22,7 @@
         <span class="meta-text">{{ article.viewCount || 0 }} 次阅读</span>
         <span class="meta-text" v-if="article.createTime">发布于 {{ article.createTime?.substring(0,10) }}</span>
       </div>
+
       <el-divider />
       <div class="content-body" v-html="formatContent(article.content)"></div>
 
@@ -52,12 +60,13 @@
         <el-pagination v-if="commentTotal>5" v-model:current-page="commentPage" :page-size="5" :total="commentTotal" layout="prev,pager,next" size="small" style="justify-content:center" @current-change="fetchComments" />
       </div>
     </div>
+
     <el-empty v-if="!loading && !article" description="文章不存在" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
@@ -65,10 +74,17 @@ import { getArticleDetail } from '@/api/article'
 import { getComments, getReplies, postComment } from '@/api/comment'
 import { checkLike, toggleLike } from '@/api/like'
 import { getFavorites, addFavorite, removeFavorite } from '@/api/favorite'
+import { parseImageList, resolveImageUrl } from '@/utils/format'
 
 const route = useRoute()
 const article = ref(null)
 const loading = ref(false)
+
+const carouselImages = computed(() => {
+  if (!article.value) return []
+  const images = parseImageList(article.value.images)
+  return images.length ? images : (article.value.coverImage ? [article.value.coverImage] : [])
+})
 
 const formatContent = (text) => {
   if (!text) return ''
@@ -96,17 +112,6 @@ const handleFavorite = async () => {
     else { const r=await addFavorite({targetType:'article',targetId:Number(route.params.id)}); if(r.code===200&&r.data){ favorited.value=true; favoriteId.value=r.data.id } }
   } catch {}
 }
-
-onMounted(async () => {
-  loading.value = true
-  try {
-    const res = await getArticleDetail(route.params.id)
-    if (res.code === 200) article.value = res.data
-  } catch {} finally { loading.value = false }
-  fetchLike()
-  fetchFavorite()
-  fetchComments()
-})
 
 const comments = ref([])
 const commentPage = ref(1)
@@ -147,12 +152,24 @@ const toggleReplies = (commentId) => {
   repliesVisible.value[commentId]=true; fetchReplies(commentId)
 }
 
+onMounted(async () => {
+  loading.value = true
+  try {
+    const res = await getArticleDetail(route.params.id)
+    if (res.code === 200) article.value = res.data
+  } catch {} finally { loading.value = false }
+  fetchLike()
+  fetchFavorite()
+  fetchComments()
+})
 </script>
 
 <style scoped>
 .back-bar { margin-bottom: 16px; }
 .detail-wrap { max-width: 800px; }
-.cover-wrap { height: 280px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+.cover-wrap { height: 280px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; background: #f5f0e8; color: #9ca3af; }
+.content-carousel { border-radius: 12px; overflow: hidden; background: #f5f7f6; margin-bottom: 24px; }
+.carousel-image { width: 100%; height: 320px; display: block; }
 .article-title { font-size: 28px; color: #1a1a1a; margin: 0 0 12px; }
 .meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .meta-text { font-size: 13px; color: #999; }

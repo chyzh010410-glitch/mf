@@ -9,8 +9,8 @@
     <el-row :gutter="20">
       <el-col :span="8" v-for="entry in entries" :key="entry.id" style="margin-bottom:20px">
         <div class="entry-card" @click="$router.push('/encyclopedia/'+entry.id)">
-          <div class="card-img" :style="{background: entry.coverImage ? 'url('+entry.coverImage+') center/cover' : '#e8f5e9'}">
-            <span v-if="!entry.coverImage" style="font-size:56px">🌳</span>
+          <div class="card-img" :style="coverStyle(entry, '#e8f5e9')">
+            <span v-if="!firstImage(entry)" style="font-size:48px">百科</span>
           </div>
           <div class="card-body">
             <h4>{{ entry.name }}</h4>
@@ -39,6 +39,7 @@
 import { ref, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { getEncyclopediaList } from '@/api/encyclopedia'
+import { firstImage, resolveImageUrl } from '@/utils/format'
 
 const entries = ref([])
 const total = ref(0)
@@ -46,6 +47,10 @@ const page = ref(1)
 const size = ref(9)
 const keyword = ref('')
 const loading = ref(false)
+
+const coverStyle = (record, fallback) => firstImage(record)
+  ? { background: `url(${resolveImageUrl(firstImage(record))}) center/cover` }
+  : { background: fallback }
 
 const fetchData = async () => {
   loading.value = true
@@ -69,7 +74,7 @@ onMounted(() => fetchData())
   cursor: pointer; transition: transform .2s, box-shadow .2s; height: 100%;
 }
 .entry-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
-.card-img { height: 180px; display: flex; align-items: center; justify-content: center; }
+.card-img { height: 180px; display: flex; align-items: center; justify-content: center; color: #9ca3af; }
 .card-body { padding: 14px 16px; }
 .sci-name { font-size: 13px; color: #888; margin: 2px 0; }
 .meta { font-size: 12px; color: #999; margin: 4px 0; }

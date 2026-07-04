@@ -1,5 +1,6 @@
 package com.mf.fertilizer.util;
 
+import com.mf.fertilizer.constant.RoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -17,7 +18,7 @@ public final class JwtUtil {
     private JwtUtil() {}
 
     public static String generate(Long userId, String username, String role) {
-        return generateWithUserType(userId, username, role, "admin");
+        return generateWithUserType(userId, username, role, RoleEnum.ADMIN);
     }
 
     public static String generateWithUserType(Long userId, String username, String role, String userType) {

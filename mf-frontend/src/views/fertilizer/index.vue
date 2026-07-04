@@ -54,7 +54,7 @@
       <el-table-column prop="stock" label="库存" width="100" align="center" />
       <el-table-column prop="unitPrice" label="单价(元)" width="100" align="center">
         <template #default="{ row }">
-          {{ row.unitPrice != null ? row.unitPrice.toFixed(2) : '-' }}
+          {{ row.unitPrice != null ? formatAmount(row.unitPrice) : '-' }}
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" min-width="140" show-overflow-tooltip />
@@ -139,6 +139,7 @@ import {
   getFertilizerPage, getFertilizerById,
   saveFertilizer, updateFertilizer, deleteFertilizer
 } from '@/api/fertilizer'
+import { formatAmount } from '@/utils/format'
 
 const typeMap = {
   organic: '有机肥',

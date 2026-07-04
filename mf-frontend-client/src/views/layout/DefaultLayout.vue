@@ -2,19 +2,25 @@
   <div class="app-shell">
     <header class="app-header">
       <div class="header-inner">
-        <router-link to="/home" class="logo">🌱 苗丰施肥</router-link>
+        <router-link to="/home" class="logo">苗丰施肥</router-link>
         <div class="header-search">
-          <el-input v-model="searchKeyword" placeholder="搜索商品、肥料、树木百科..." size="large" clearable @keyup.enter="doSearch">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索商品、肥料、树木百科..."
+            size="large"
+            clearable
+            @keyup.enter="doSearch"
+          >
             <template #prefix><el-icon><Search /></el-icon></template>
           </el-input>
         </div>
         <nav class="header-nav">
           <router-link to="/home">首页</router-link>
-          <router-link to="/products">商品商城</router-link>
-          <router-link to="/encyclopedia">树木百科</router-link>
+          <router-link to="/products">{{ publicConfig.navProductLabel }}</router-link>
+          <router-link to="/encyclopedia">{{ publicConfig.navEncyclopediaLabel }}</router-link>
           <router-link to="/articles">科普文章</router-link>
           <router-link to="/activities">优惠活动</router-link>
-          <router-link to="/ai" style="color:#e6a23c">AI 客服</router-link>
+          <router-link to="/ai" class="ai-link">AI 客服</router-link>
         </nav>
         <div class="header-actions">
           <el-badge v-if="unreadCount" :value="unreadCount" :max="99">
@@ -32,6 +38,7 @@
                   <el-dropdown-item @click="$router.push('/user/profile')">个人中心</el-dropdown-item>
                   <el-dropdown-item @click="$router.push('/orders')">我的订单</el-dropdown-item>
                   <el-dropdown-item @click="$router.push('/favorites')">我的收藏</el-dropdown-item>
+                  <el-dropdown-item @click="$router.push('/history')">浏览历史</el-dropdown-item>
                   <el-dropdown-item @click="$router.push('/messages')">消息中心</el-dropdown-item>
                   <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
@@ -57,35 +64,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { Search, Bell, ShoppingCart } from '@element-plus/icons-vue'
+import { getPublicConfig } from '@/api/config'
 import { getUnreadCount } from '@/api/message'
-// 第一步：先从 vue 导入 provide（必须写！）
-import { provide } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const searchKeyword = ref('')
 const cartCount = ref(0)
 const unreadCount = ref(0)
+const publicConfig = ref({
+  navProductLabel: '商品商城',
+  navEncyclopediaLabel: '树木百科'
+})
+
+const fetchPublicConfig = async () => {
+  try {
+    const res = await getPublicConfig()
+    publicConfig.value = {
+      ...publicConfig.value,
+      ...(res.data || {})
+    }
+  } catch {
+    // Public config has safe defaults, so the layout can still render.
+  }
+}
 
 const fetchUnreadCount = async () => {
   try {
     const res = await getUnreadCount()
     unreadCount.value = res.data || 0
-  } catch {}
+  } catch {
+    // Message count is not critical for page rendering.
+  }
 }
 provide('fetchUnreadCount', fetchUnreadCount)
 
 const doSearch = () => {
-  if (searchKeyword.value) router.push({ path: '/products', query: { keyword: searchKeyword.value } })
+  if (searchKeyword.value) {
+    router.push({ path: '/products', query: { keyword: searchKeyword.value } })
+  }
 }
 
-const handleLogout = () => { authStore.logout(); router.push('/login') }
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/login')
+}
 
-onMounted(() => { fetchUnreadCount() })
+onMounted(() => {
+  fetchPublicConfig()
+  fetchUnreadCount()
+})
 </script>
 
 <style scoped>
@@ -97,6 +129,7 @@ onMounted(() => { fetchUnreadCount() })
 .header-nav { display: flex; gap: 20px; font-size: 14px; white-space: nowrap; }
 .header-nav a { color: var(--color-text-secondary); transition: color 0.2s; }
 .header-nav a:hover, .header-nav a.router-link-exact-active { color: var(--color-primary); }
+.ai-link { color: #e6a23c !important; }
 .header-actions { display: flex; align-items: center; gap: 12px; }
 .cart-link { position: relative; }
 .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--color-danger); color: #fff; font-size: 10px; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -107,4 +140,8 @@ onMounted(() => { fetchUnreadCount() })
 .footer-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 12px; }
 .footer-links a { color: rgba(255,255,255,0.7); }
 .footer-links a:hover { color: #fff; }
+@media (max-width: 980px) {
+  .header-search { display: none; }
+  .header-nav { gap: 12px; }
+}
 </style>

@@ -20,13 +20,13 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="单价" width="120"><template #default="{ row }">¥{{ Number(row.price).toFixed(2) }}</template></el-table-column>
+      <el-table-column label="单价" width="120"><template #default="{ row }">{{ formatCurrency(row.price) }}</template></el-table-column>
       <el-table-column label="数量" width="160">
         <template #default="{ row }">
           <el-input-number v-model="row.quantity" :min="1" :max="row.stock || 999" size="small" @change="(v) => updateQty(row, v)" />
         </template>
       </el-table-column>
-      <el-table-column label="小计" width="120"><template #default="{ row }">¥{{ (Number(row.price) * (Number(row.quantity) || 1)).toFixed(2) }}</template></el-table-column>
+      <el-table-column label="小计" width="120"><template #default="{ row }">{{ formatCurrency(Number(row.price) * (Number(row.quantity) || 1)) }}</template></el-table-column>
       <el-table-column label="操作" width="80">
         <template #default="{ row, $index }"><el-button type="danger" link @click="removeItem(row, $index)">删除</el-button></template>
       </el-table-column>
@@ -34,7 +34,7 @@
     <el-empty v-else description="购物车是空的"><el-button type="primary" @click="$router.push('/home')">去逛逛</el-button></el-empty>
     <div v-if="cartItems.length" style="margin-top:20px;text-align:right;padding:16px;background:#fff;border-radius:8px">
       <span style="color:#999;margin-right:20px">已选 <b style="color:#2d8c4a">{{ selectedRows.length }}</b> 件</span>
-      <span style="font-size:18px">合计：<b style="color:#e74c3c">¥{{ computedTotal }}</b></span>
+      <span style="font-size:18px">合计：<b style="color:#e74c3c">{{ computedTotal }}</b></span>
       <el-button type="primary" size="large" :disabled="selectedRows.length === 0" style="margin-left:20px" @click="goCheckout">去结算</el-button>
     </div>
   </div>
@@ -45,6 +45,7 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getCart, updateCartItem, removeCartItem } from '@/api/cart'
+import { formatCurrency } from '@/utils/format'
 
 const router = useRouter()
 const cartItems = ref([])
@@ -53,7 +54,7 @@ const tableRef = ref(null)
 const selectedRows = ref([])
 
 const computedTotal = computed(() =>
-  selectedRows.value.reduce((s, i) => s + Number(i.price) * (Number(i.quantity) || 1), 0).toFixed(2)
+  formatCurrency(selectedRows.value.reduce((s, i) => s + Number(i.price) * (Number(i.quantity) || 1), 0))
 )
 
 let selectionTimer = null

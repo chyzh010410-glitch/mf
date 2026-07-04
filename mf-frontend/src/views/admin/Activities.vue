@@ -22,8 +22,8 @@
       <el-table-column prop="isBanner" label="Banner" width="70" align="center">
         <template #default="{row}"><el-tag size="small" :type="row.isBanner===1?'danger':'info'">{{ row.isBanner===1?'是':'否' }}</el-tag></template>
       </el-table-column>
-      <el-table-column prop="startTime" label="开始" width="140" align="center"><template #default="{r}">{{ r.startTime?.substring(0,16) }}</template></el-table-column>
-      <el-table-column prop="endTime" label="结束" width="140" align="center"><template #default="{r}">{{ r.endTime?.substring(0,16) }}</template></el-table-column>
+      <el-table-column prop="startTime" label="开始" width="140" align="center"><template #default="{row}">{{ row.startTime?.substring(0,16) }}</template></el-table-column>
+      <el-table-column prop="endTime" label="结束" width="140" align="center"><template #default="{row}">{{ row.endTime?.substring(0,16) }}</template></el-table-column>
       <el-table-column label="操作" width="160" align="center" fixed="right">
         <template #default="{row}">
           <el-button type="primary" link size="small" :icon="Edit" @click="handleEdit(row)">编辑</el-button>

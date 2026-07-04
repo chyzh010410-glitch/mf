@@ -59,14 +59,14 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, MapLocation, Lock, Star, Document, StarFilled, Bell } from '@element-plus/icons-vue'
-import request from '@/utils/request'
+import { getProfile, updateProfile } from '@/api/user'
 
 const user = ref({})
 const form = reactive({ nickname: '', email: '', gender: 0 })
 
 onMounted(async () => {
   try {
-    const res = await request({ url: '/client/user/profile', method: 'get' })
+    const res = await getProfile()
     if (res.code === 200 && res.data) {
       user.value = res.data
       form.nickname = res.data.nickname || ''
@@ -78,7 +78,7 @@ onMounted(async () => {
 
 const saveProfile = async () => {
   try {
-    await request({ url: '/client/user/profile', method: 'put', data: form })
+    await updateProfile(form)
     user.value.nickname = form.nickname
     user.value.email = form.email
     ElMessage.success('保存成功')

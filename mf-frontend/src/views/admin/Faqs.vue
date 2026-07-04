@@ -48,7 +48,7 @@ import { getFaqPage, getFaqDetail, saveFaq, updateFaq, deleteFaq } from '@/api/a
 const queryForm=reactive({ keyword:'', category:'', page:1, size:10 })
 const loading=ref(false); const tableData=ref([]); const total=ref(0)
 const dialogVisible=ref(false); const isEdit=ref(false); const saving=ref(false); const formRef=ref(null); const editId=ref(null)
-const df=()=>({ question:'', answer:'', category:'', sortOrder:0, isPublished:0 })
+const df=()=>({ question:'', answer:'', category:'', sortOrder:0, isPublished:1 })
 const formData=reactive(df())
 const rules={ question:[{required:true,message:'请输入问题'}], answer:[{required:true,message:'请输入答案'}], category:[{required:true,message:'请选择分类'}] }
 const fetchData=async()=>{ loading.value=true; try{ const p={...queryForm}; if(!p.keyword) delete p.keyword; if(!p.category) delete p.category

@@ -10,35 +10,37 @@
     </el-row>
 
     <!-- 状态筛选 -->
-    <el-tabs v-model="activeStatus" @tab-change="fetchData">
-      <el-tab-pane label="全部" name="" />
-      <el-tab-pane label="待付款" name="pending_pay" />
-      <el-tab-pane label="待发货" name="pending_ship" />
-      <el-tab-pane label="已发货" name="shipped" />
-      <el-tab-pane label="已完成" name="completed" />
-      <el-tab-pane label="已取消" name="cancelled" />
+    <el-tabs v-model="activeStatus" @tab-change="handleStatusChange">
+      <el-tab-pane v-for="item in orderStatusOptions" :key="item.value" :label="item.label" :name="item.value" />
     </el-tabs>
 
     <el-table :data="tableData" v-loading="loading" border stripe>
       <el-table-column prop="orderNo" label="订单编号" width="200" />
       <el-table-column prop="userId" label="用户ID" width="100" align="center" />
       <el-table-column prop="totalAmount" label="金额" width="100" align="center">
-        <template #default="{ row }">¥{{ row.totalAmount }}</template>
+        <template #default="{ row }">{{ formatCurrency(row.totalAmount) }}</template>
       </el-table-column>
       <el-table-column prop="payAmount" label="实付" width="100" align="center">
-        <template #default="{ row }">¥{{ row.payAmount }}</template>
+        <template #default="{ row }">{{ formatCurrency(row.payAmount) }}</template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="90" align="center">
         <template #default="{ row }">
-          <el-tag :type="statusType[row.status]" size="small">{{ statusMap[row.status] || row.status }}</el-tag>
+          <el-tag :type="getOrderStatusType(row.status)" size="small">{{ getOrderStatusLabel(row.status) }}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="paymentMethod" label="支付方式" width="100" align="center">
+        <template #default="{ row }">{{ getPaymentMethodLabel(row.paymentMethod) }}</template>
+      </el-table-column>
+      <el-table-column prop="payTime" label="支付时间" width="180" show-overflow-tooltip>
+        <template #default="{ row }">{{ row.payTime || '-' }}</template>
+      </el-table-column>
       <el-table-column prop="createTime" label="下单时间" width="180" show-overflow-tooltip />
-      <el-table-column label="操作" width="200" align="center" fixed="right">
+      <el-table-column label="操作" width="260" align="center" fixed="right">
         <template #default="{ row }">
           <el-button v-if="row.status === 'pending_pay'" type="success" size="small" @click="updateStatus(row, 'pending_ship')">标记已付款</el-button>
           <el-button v-if="row.status === 'pending_ship'" type="primary" size="small" @click="openShip(row)">发货</el-button>
           <el-button v-if="row.status === 'pending_pay'" type="warning" size="small" @click="updateStatus(row, 'cancelled')" style="margin-left:4px">取消</el-button>
+          <el-button v-if="canRefund(row)" type="danger" size="small" @click="handleRefund(row)" style="margin-left:4px">退款</el-button>
           <el-button size="small" style="margin-left:4px" @click="openDetail(row)">详情</el-button>
         </template>
       </el-table-column>
@@ -80,10 +82,13 @@
         <el-descriptions :column="2" border size="small">
           <el-descriptions-item label="订单编号">{{ detailOrder.orderNo }}</el-descriptions-item>
           <el-descriptions-item label="状态">
-            <el-tag :type="statusType[detailOrder.status]" size="small">{{ statusMap[detailOrder.status] || detailOrder.status }}</el-tag>
+            <el-tag :type="getOrderStatusType(detailOrder.status)" size="small">{{ getOrderStatusLabel(detailOrder.status) }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="商品总额">¥{{ detailOrder.totalAmount }}</el-descriptions-item>
-          <el-descriptions-item label="实付金额">¥{{ detailOrder.payAmount }}</el-descriptions-item>
+          <el-descriptions-item label="商品总额">{{ formatCurrency(detailOrder.totalAmount) }}</el-descriptions-item>
+          <el-descriptions-item label="实付金额">{{ formatCurrency(detailOrder.payAmount) }}</el-descriptions-item>
+          <el-descriptions-item label="支付方式">{{ getPaymentMethodLabel(detailOrder.paymentMethod) }}</el-descriptions-item>
+          <el-descriptions-item label="支付时间">{{ detailOrder.payTime || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="备注/售后" :span="2" v-if="detailOrder.adminRemark">{{ detailOrder.adminRemark }}</el-descriptions-item>
           <el-descriptions-item label="下单时间" :span="2">{{ detailOrder.createTime }}</el-descriptions-item>
         </el-descriptions>
         <h4 style="margin-top:16px">商品明细</h4>
@@ -100,8 +105,17 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import request from '@/utils/request'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getOrderDetail, getOrderPage, getOrderStatistics, refundOrder, shipOrder, updateOrderStatus } from '@/api/admin'
+import {
+  buildOrderStats,
+  getOrderStatusLabel,
+  getOrderStatusType,
+  getPaymentMethodLabel,
+  orderStatusActions,
+  orderStatusOptions
+} from '@/api/orderStatus'
+import { formatCurrency } from '@/utils/format'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -110,19 +124,7 @@ const page = ref(1)
 const size = ref(10)
 const activeStatus = ref('')
 
-const statusMap = {
-  pending_pay: '待付款', pending_ship: '待发货', shipped: '已发货',
-  completed: '已完成', cancelled: '已取消'
-}
-const statusType = {
-  pending_pay: 'warning', pending_ship: 'info', shipped: '',
-  completed: 'success', cancelled: 'danger'
-}
-
-const stats = ref([
-  { label: '全部', count: 0 }, { label: '待付款', count: 0 },
-  { label: '待发货', count: 0 }, { label: '已发货', count: 0 }, { label: '已完成', count: 0 }
-])
+const stats = ref(buildOrderStats())
 
 // Ship dialog
 const shipVisible = ref(false)
@@ -145,20 +147,15 @@ const fetchData = async () => {
   try {
     const params = { page: page.value, size: size.value }
     if (activeStatus.value) params.status = activeStatus.value
-    const res = await request({ url: '/admin/orders', method: 'get', params })
+    const res = await getOrderPage(params)
     if (res.code === 200 && res.data) {
       tableData.value = res.data.records || []
       total.value = res.data.total || 0
     }
     // Fetch stats
-    const statRes = await request({ url: '/admin/orders/statistics', method: 'get' })
+    const statRes = await getOrderStatistics()
     if (statRes.code === 200 && statRes.data) {
-      const d = statRes.data
-      stats.value = [
-        { label: '全部', count: d.total }, { label: '待付款', count: d.pendingPay },
-        { label: '待发货', count: d.pendingShip }, { label: '已发货', count: d.shipped },
-        { label: '已完成', count: d.completed }
-      ]
+      stats.value = buildOrderStats(statRes.data)
     }
   } catch {} finally { loading.value = false }
 }
@@ -175,11 +172,7 @@ const doShip = async () => {
   if (!valid) return
   shipping.value = true
   try {
-    const res = await request({
-      url: `/admin/orders/${shipTargetId.value}/ship`,
-      method: 'post',
-      data: shipForm
-    })
+    const res = await shipOrder(shipTargetId.value, shipForm)
     if (res.code === 200) {
       ElMessage.success('发货成功')
       shipVisible.value = false
@@ -188,25 +181,42 @@ const doShip = async () => {
   } catch {} finally { shipping.value = false }
 }
 
-const statusActions = { pending_ship: '已标记为已付款，可发货', cancelled: '订单已取消', shipped: '已标记为已发货', completed: '订单已完成' }
 const updateStatus = async (row, status) => {
   try {
-    const res = await request({
-      url: `/admin/orders/${row.id}/status`,
-      method: 'post',
-      data: { status }
-    })
+    const res = await updateOrderStatus(row.id, status)
     if (res.code === 200) {
-      ElMessage.success(statusActions[status] || '状态已更新')
+      ElMessage.success(orderStatusActions[status] || '状态已更新')
       fetchData()
     }
   } catch {}
 }
 
+const canRefund = (row) => ['pending_ship', 'shipped', 'completed', 'refund_requested'].includes(row.status)
+
+const handleRefund = async (row) => {
+  try {
+    await ElMessageBox.confirm(`确认对订单 ${row.orderNo} 执行模拟退款？`, '退款确认', {
+      type: 'warning',
+      confirmButtonText: '确认退款',
+      cancelButtonText: '取消'
+    })
+    const res = await refundOrder(row.id, { reason: '管理员模拟退款' })
+    if (res.code === 200) {
+      ElMessage.success('退款成功')
+      fetchData()
+    }
+  } catch {}
+}
+
+const handleStatusChange = () => {
+  page.value = 1
+  fetchData()
+}
+
 const openDetail = async (row) => {
   detailVisible.value = true
   try {
-    const res = await request({ url: `/admin/orders/${row.id}`, method: 'get' })
+    const res = await getOrderDetail(row.id)
     if (res.code === 200 && res.data) {
       detailOrder.value = res.data.order
       detailItems.value = res.data.items || []

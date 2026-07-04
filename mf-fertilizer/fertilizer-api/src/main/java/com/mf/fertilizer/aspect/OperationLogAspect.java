@@ -3,20 +3,21 @@ package com.mf.fertilizer.aspect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mf.fertilizer.annotation.OperationLog;
 import com.mf.fertilizer.context.UserContext;
-import com.mf.fertilizer.entity.SystemLog;
-import com.mf.fertilizer.service.SystemLogService;
+import com.mf.fertilizer.platform.entity.SystemLog;
+import com.mf.fertilizer.platform.service.SystemLogService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Aspect
 @Component
@@ -24,69 +25,66 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OperationLogAspect {
 
-    private final SystemLogService systemLogService;
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private final SystemLogService systemLogService;
 
     @Around("@annotation(opLog)")
     public Object around(ProceedingJoinPoint joinPoint, OperationLog opLog) throws Throwable {
-        var sysLog = new SystemLog();
-        sysLog.setModule(opLog.module());
-        sysLog.setAction(opLog.action());
-        sysLog.setTarget(opLog.target());
-        sysLog.setCreateTime(LocalDateTime.now());
+        var systemLog = new SystemLog();
+        systemLog.setModule(opLog.module());
+        systemLog.setAction(opLog.action());
+        systemLog.setTarget(opLog.target());
+        systemLog.setCreateTime(LocalDateTime.now());
 
-        // 操作人信息 from ThreadLocal
-        Long userId = UserContext.getUserId();
-        if (userId != null) {
-            sysLog.setOperatorId(userId);
-            sysLog.setOperatorName(UserContext.getUsername());
+        var currentUser = UserContext.getCurrentUser();
+        if (currentUser != null) {
+            systemLog.setOperatorId(currentUser.userId());
+            systemLog.setOperatorName(currentUser.username());
         }
 
-        // 请求参数
         try {
-            Object[] args = joinPoint.getArgs();
-            // 过滤掉 HttpServletRequest/Response 类型的参数
-            var filtered = new java.util.ArrayList<>();
+            var filteredArgs = new ArrayList<>();
+            var args = joinPoint.getArgs();
             if (args != null) {
                 for (Object arg : args) {
                     if (arg == null) continue;
-                    if (arg instanceof jakarta.servlet.http.HttpServletRequest) continue;
-                    if (arg instanceof jakarta.servlet.http.HttpServletResponse) continue;
-                    filtered.add(arg);
+                    if (arg instanceof HttpServletRequest) continue;
+                    if (arg instanceof HttpServletResponse) continue;
+                    filteredArgs.add(arg);
                 }
             }
-            if (!filtered.isEmpty()) {
-                sysLog.setRequestParams(MAPPER.writeValueAsString(filtered));
+            if (!filteredArgs.isEmpty()) {
+                systemLog.setRequestParams(MAPPER.writeValueAsString(filteredArgs));
             }
         } catch (Exception e) {
-            sysLog.setRequestParams("[序列化失败]");
+            systemLog.setRequestParams("[request params serialization failed]");
         }
 
-        // IP 和 User-Agent
         try {
             var attrs = RequestContextHolder.getRequestAttributes();
             if (attrs instanceof ServletRequestAttributes servletAttrs) {
                 HttpServletRequest request = servletAttrs.getRequest();
-                sysLog.setIp(getClientIp(request));
-                sysLog.setUserAgent(request.getHeader("User-Agent"));
+                systemLog.setIp(getClientIp(request));
+                systemLog.setUserAgent(request.getHeader("User-Agent"));
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         long start = System.currentTimeMillis();
-        Object result;
         try {
-            result = joinPoint.proceed();
-            sysLog.setCostTime(System.currentTimeMillis() - start);
-            sysLog.setResult("success");
+            Object result = joinPoint.proceed();
+            systemLog.setCostTime(System.currentTimeMillis() - start);
+            systemLog.setResult("success");
             return result;
         } catch (Throwable e) {
-            sysLog.setCostTime(System.currentTimeMillis() - start);
-            sysLog.setResult("error");
-            sysLog.setErrorMsg(e.getMessage());
+            systemLog.setCostTime(System.currentTimeMillis() - start);
+            systemLog.setResult("error");
+            systemLog.setErrorMsg(e.getMessage());
             throw e;
         } finally {
             try {
-                systemLogService.save(sysLog);
+                systemLogService.save(systemLog);
             } catch (Exception e) {
                 log.warn("Failed to save operation log: {}", e.getMessage());
             }

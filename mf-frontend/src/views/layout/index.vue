@@ -1,10 +1,9 @@
 <template>
   <div class="layout">
-    <!-- 侧边栏 -->
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-sidebar">
       <div class="sidebar-header">
-        <span v-if="!isCollapse" class="sidebar-logo-text">🌱 苗丰</span>
-        <span v-else class="sidebar-logo-text">🌱</span>
+        <span v-if="!isCollapse" class="sidebar-logo-text">苗丰后台</span>
+        <span v-else class="sidebar-logo-text">苗丰</span>
       </div>
       <el-menu
         :default-active="activeMenu"
@@ -34,17 +33,19 @@
         <el-sub-menu index="order-group">
           <template #title><el-icon><Tickets /></el-icon><span>订单管理</span></template>
           <el-menu-item index="/admin/orders"><span>订单列表</span></el-menu-item>
+          <el-menu-item index="/admin/payments"><span>支付流水</span></el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="user-group">
           <template #title><el-icon><UserFilled /></el-icon><span>用户管理</span></template>
           <el-menu-item index="/admin/users"><span>用户列表</span></el-menu-item>
+          <el-menu-item index="/admin/merchants"><span>商家管理</span></el-menu-item>
           <el-menu-item index="/admin/feedbacks"><span>反馈处理</span></el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="system-group">
           <template #title><el-icon><Tools /></el-icon><span>系统管理</span></template>
           <el-menu-item index="/admin/admins"><span>管理员管理</span></el-menu-item>
           <el-menu-item index="/admin/config"><span>平台设置</span></el-menu-item>
-          <el-menu-item index="/admin/faqs"><span>FAQ管理</span></el-menu-item>
+          <el-menu-item index="/admin/faqs"><span>FAQ 管理</span></el-menu-item>
           <el-menu-item index="/admin/activities"><span>活动管理</span></el-menu-item>
           <el-menu-item index="/admin/messages"><span>消息推送</span></el-menu-item>
           <el-menu-item index="/admin/logs"><span>系统日志</span></el-menu-item>
@@ -52,15 +53,10 @@
       </el-menu>
     </el-aside>
 
-    <!-- 右侧主体 -->
     <div class="layout-main">
-      <!-- 顶部栏 -->
       <header class="layout-header">
         <div class="header-left">
-          <el-icon
-            class="collapse-icon"
-            @click="isCollapse = !isCollapse"
-          >
+          <el-icon class="collapse-icon" @click="isCollapse = !isCollapse">
             <Fold v-if="!isCollapse" />
             <Expand v-else />
           </el-icon>
@@ -68,13 +64,10 @@
         </div>
         <div class="header-right">
           <span class="header-user">{{ authStore.userInfo?.realName || authStore.userInfo?.username || '管理员' }}</span>
-          <el-button type="danger" text size="small" @click="handleLogout">
-            退出登录
-          </el-button>
+          <el-button type="danger" text size="small" @click="handleLogout">退出登录</el-button>
         </div>
       </header>
 
-      <!-- 内容区 -->
       <main class="layout-content">
         <router-view />
       </main>
@@ -87,7 +80,7 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { logout } from '@/api/auth'
-import { Shop, Grid, Document, Setting, Goods, Collection, Tickets, UserFilled, Tools } from '@element-plus/icons-vue'
+import { Shop, Grid, Document, Setting, Goods, Collection, Tickets, UserFilled, Tools, Fold, Expand } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -98,7 +91,11 @@ const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => route.meta?.title || '')
 
 const handleLogout = async () => {
-  try { await logout() } catch { /* 忽略 */ }
+  try {
+    await logout()
+  } catch {
+    // Ignore logout API failures and clear local session.
+  }
   authStore.logout()
   router.push('/login')
 }
@@ -133,7 +130,6 @@ const handleLogout = async () => {
   overflow: hidden;
 }
 
-/* Element Plus menu overrides */
 .layout-sidebar .el-menu {
   border-right: none;
 }

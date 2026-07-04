@@ -12,6 +12,7 @@ const routes = [
       { path: 'product/:id', name: 'ProductDetail', component: () => import('@/views/product/detail.vue'), meta: { title: '商品详情' } },
       { path: 'cart', name: 'Cart', component: () => import('@/views/cart/index.vue'), meta: { title: '购物车' } },
       { path: 'checkout', name: 'Checkout', component: () => import('@/views/checkout/index.vue'), meta: { title: '确认订单' } },
+      { path: 'pay/:id', name: 'Cashier', component: () => import('@/views/payment/cashier.vue'), meta: { title: '订单支付' } },
       { path: 'orders', name: 'OrderList', component: () => import('@/views/order/list.vue'), meta: { title: '我的订单' } },
       { path: 'order/:id', name: 'OrderDetail', component: () => import('@/views/order/detail.vue'), meta: { title: '订单详情' } },
       { path: 'user/profile', name: 'Profile', component: () => import('@/views/user/profile.vue'), meta: { title: '个人中心' } },
@@ -33,10 +34,15 @@ const routes = [
   }
 ]
 
-const router = createRouter({ history: createWebHistory(), routes, scrollBehavior: () => ({ top: 0 }) })
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+  scrollBehavior: () => ({ top: 0 })
+})
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('clientToken')
+  document.title = `${to.meta.title || '首页'} - 苗丰施肥`
   if (to.path !== '/login' && !token) next('/login')
   else if (to.path === '/login' && token) next('/')
   else next()

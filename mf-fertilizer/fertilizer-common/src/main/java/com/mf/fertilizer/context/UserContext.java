@@ -1,45 +1,78 @@
 package com.mf.fertilizer.context;
 
-/**
- * ThreadLocal-based user context — holds current request's user info parsed from JWT.
- * Populated by JwtInterceptor, cleared by afterCompletion. Read anywhere via static getters.
- */
+import com.mf.fertilizer.constant.RoleEnum;
+
 public final class UserContext {
 
-    private static final ThreadLocal<Long> USER_ID = new ThreadLocal<>();
-    private static final ThreadLocal<String> USERNAME = new ThreadLocal<>();
-    private static final ThreadLocal<String> ROLE = new ThreadLocal<>();
-    private static final ThreadLocal<String> USER_TYPE = new ThreadLocal<>();
+    private static final ThreadLocal<CurrentUser> CURRENT_USER = new ThreadLocal<>();
 
-    private UserContext() {}
+    private UserContext() {
+    }
 
     public static void set(Long userId, String username, String role, String userType) {
-        USER_ID.set(userId);
-        USERNAME.set(username);
-        ROLE.set(role);
-        USER_TYPE.set(userType);
+        set(new CurrentUser(userId, username, role, userType));
+    }
+
+    public static void set(CurrentUser currentUser) {
+        CURRENT_USER.set(currentUser);
+    }
+
+    public static CurrentUser getCurrentUser() {
+        return CURRENT_USER.get();
+    }
+
+    public static boolean isAuthenticated() {
+        return getCurrentUser() != null;
     }
 
     public static Long getUserId() {
-        return USER_ID.get();
+        var currentUser = getCurrentUser();
+        return currentUser == null ? null : currentUser.userId();
+    }
+
+    public static Long requireUserId() {
+        var userId = getUserId();
+        if (userId == null) {
+            throw new IllegalStateException("Current user is not authenticated");
+        }
+        return userId;
     }
 
     public static String getUsername() {
-        return USERNAME.get();
+        var currentUser = getCurrentUser();
+        return currentUser == null ? null : currentUser.username();
     }
 
     public static String getRole() {
-        return ROLE.get();
+        var currentUser = getCurrentUser();
+        return currentUser == null ? null : currentUser.role();
     }
 
     public static String getUserType() {
-        return USER_TYPE.get();
+        var currentUser = getCurrentUser();
+        return currentUser == null ? null : currentUser.userType();
+    }
+
+    public static boolean isUserType(String userType) {
+        return userType != null && userType.equals(getUserType());
+    }
+
+    public static boolean isClientUser() {
+        return isUserType(RoleEnum.CONSUMER);
+    }
+
+    public static boolean isAdminUser() {
+        return isUserType(RoleEnum.ADMIN);
+    }
+
+    public static boolean isMerchantUser() {
+        return isUserType(RoleEnum.MERCHANT);
     }
 
     public static void clear() {
-        USER_ID.remove();
-        USERNAME.remove();
-        ROLE.remove();
-        USER_TYPE.remove();
+        CURRENT_USER.remove();
+    }
+
+    public record CurrentUser(Long userId, String username, String role, String userType) {
     }
 }

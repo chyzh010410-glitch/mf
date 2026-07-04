@@ -515,6 +515,7 @@ CREATE TABLE encyclopedia_article (
     title           VARCHAR(200)    NOT NULL                COMMENT '文章标题',
     summary         VARCHAR(500)    DEFAULT NULL            COMMENT '摘要',
     cover_image     VARCHAR(500)    DEFAULT NULL            COMMENT '封面图',
+    images          TEXT            DEFAULT NULL            COMMENT '图片JSON数组',
     content         LONGTEXT        NOT NULL                COMMENT '文章内容(富文本)',
     author_id       BIGINT          DEFAULT NULL            COMMENT '作者ID(管理员)',
     category_id     BIGINT          DEFAULT NULL            COMMENT '分类ID',
